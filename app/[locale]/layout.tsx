@@ -1,21 +1,12 @@
-import "css/tailwind.css"
-import "pliny/search/algolia.css"
-import "remark-github-blockquote-alert/alert.css"
-import React from "react"
-import { Analytics, AnalyticsConfig } from "pliny/analytics"
-import { SearchProvider, SearchConfig } from "pliny/search"
-import Header from "@/components/Header"
-import SectionContainer from "@/components/SectionContainer"
+import AppShell from "@/components/AppShell"
+import ClarityTracker from "@/components/ClarityTracker"
 import siteMetadata from "@/data/siteMetadata"
 import { Metadata } from "next"
-import SiteFooter from "@/components/SiteFooter"
-import { NextIntlClientProvider } from "next-intl"
 import { hasLocale } from "next-intl"
-import { routing, supportedLocales } from "../i18n/routing"
-import { notFound } from "next/navigation"
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server"
-import Script from "next/script"
-import ClarityTracker from "../../components/ClarityTracker"
+import { notFound } from "next/navigation"
+import React from "react"
+import { routing } from "../i18n/routing"
 import {
   generateHomeFAQSchema,
   generateHomeHowToSchema,
@@ -109,7 +100,6 @@ export default async function RootLayout({
   children: React.ReactNode
   params: Promise<{ locale: string }>
 }) {
-  const basePath = process.env.BASE_PATH || ""
   const { locale } = await params
 
   if (!hasLocale(routing.locales, locale)) {
@@ -236,56 +226,15 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang={locale} className={`scroll-smooth`} suppressHydrationWarning>
-      <link rel="apple-touch-icon" sizes="76x76" href={`${basePath}/static/logo.png`} />
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="48x48"
-        href={`${basePath}/static/favicons/favicon.png`}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <link
-        rel="icon"
-        type="image/png"
-        sizes="16x16"
-        href={`${basePath}/static/favicons/favicon.png`}
-      />
-      <link rel="manifest" href={`${basePath}/static/favicons/site.webmanifest`} />
-      <link
-        rel="mask-icon"
-        href={`${basePath}/static/favicons/safari-pinned-tab.png`}
-        color="#116466"
-      />
-      <meta name="saashub-verification" content="e4h08bjpev5u" />
-      <meta name="msvalidate.01" content="58567D271AD7C1B504E10F5DC587BD0B" />
-      <meta name="google-adsense-account" content="ca-pub-2108246014001009"></meta>
-      <meta name="google-site-verification" content="QBYZptmNADcvd2h8ZZVSZIJUlv5RnI8yYmHtEld1mKk" />
-      <meta name="msapplication-TileColor" content="#000000" />
-      <link rel="alternate" type="application/rss+xml" href={`${basePath}/feed.xml`} />
-      <body className="min-h-screen bg-gradient-to-b from-[#020617] via-[#0a0f1f] to-[#000D1A]/90 pl-[calc(100vw-100%)] text-white antialiased">
-        {/* JSON-LD Structured Data - Must be in body to avoid hydration error */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        {/* External Scripts using Next.js Script component */}
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2108246014001009"
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-        />
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <ClarityTracker />
-          <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
-          <SectionContainer>
-            <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
-              <Header />
-              <main className="min-h-[54vh] w-full overflow-x-hidden">{children}</main>
-            </SearchProvider>
-            <SiteFooter />
-          </SectionContainer>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+      <ClarityTracker />
+      <AppShell locale={locale} messages={messages}>
+        {children}
+      </AppShell>
+    </>
   )
 }

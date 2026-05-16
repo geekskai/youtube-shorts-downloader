@@ -1,4 +1,13 @@
 {
+  "NotFoundPage": {
+    "badge": "404 · Page not found",
+    "title": "This page isn't available",
+    "description": "The link may be broken, or the page was removed. Go back home and paste a YouTube Shorts URL to download MP4.",
+    "cta_home": "Back to homepage",
+    "cta_download": "Open downloader",
+    "cta_blog": "Read the blog",
+    "hint": "Free YouTube Shorts downloader — paste a link, pick quality, save MP4. No sign-up."
+  },
   "HomePage": {
     "home_seo_title": "Free YouTube Shorts Downloader — Save MP4 Online | YoutubeShortDownloader",
     "home_seo_description": "Paste a YouTube Shorts link and download MP4 in seconds. No account or app—works in Safari, Chrome, and on iPhone and Android. Always free.",
