@@ -10,7 +10,11 @@ interface Props {
   heading?: string
 }
 
-export default function AuthorLayout({ children, content, heading = "About DecimalTools" }: Props) {
+export default function AuthorLayout({
+  children,
+  content,
+  heading = "About YoutubeShortDownloader",
+}: Props) {
   const { name, avatar, occupation, company, email, twitter, linkedin, github } = content
 
   return (

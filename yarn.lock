@@ -1609,6 +1609,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bufbuild/protobuf@npm:^2.0.0":
+  version: 2.12.0
+  resolution: "@bufbuild/protobuf@npm:2.12.0"
+  checksum: f905c34ffbf0a05ee3fd6281a13f5daa5b43c215682d4900b23629691c1ee7fe0d96fefbbad84055ba0547ef089fb2d488a68c4e8383abf5b7dc56a9207c44ea
+  languageName: node
+  linkType: hard
+
 "@citation-js/core@npm:^0.7.14":
   version: 0.7.18
   resolution: "@citation-js/core@npm:0.7.18"
@@ -5721,67 +5728,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"decimaltools@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "decimaltools@workspace:."
-  dependencies:
-    "@headlessui/react": 2.2.10
-    "@microsoft/clarity": ^1.0.2
-    "@next/bundle-analyzer": 16.2.4
-    "@svgr/webpack": ^8.0.1
-    "@tailwindcss/forms": ^0.5.7
-    "@tailwindcss/typography": ^0.5.12
-    "@types/mdx": ^2.0.12
-    "@types/react": 18.3.28
-    "@types/react-dom": 18.3.7
-    "@typescript-eslint/eslint-plugin": 8.59.0
-    "@typescript-eslint/parser": 8.59.0
-    autoprefixer: ^10.4.13
-    body-scroll-lock: ^4.0.0-beta.0
-    cheerio: ^1.1.0
-    contentlayer2: 0.5.8
-    cross-env: ^7.0.3
-    date-fns: ^4.1.0
-    eslint: 9.39.4
-    eslint-config-next: 16.2.4
-    eslint-config-prettier: ^8.8.0
-    eslint-plugin-prettier: ^5.0.0
-    github-slugger: ^2.0.0
-    hast-util-from-html-isomorphic: ^2.0.0
-    husky: ^9.1.7
-    jsdom: ^26.1.0
-    lint-staged: ^13.0.0
-    lucide-react: ^0.525.0
-    next: 16.2.4
-    next-contentlayer2: 0.5.8
-    next-intl: 4.9.1
-    next-themes: 0.4.6
-    pliny: 0.4.1
-    postcss: ^8.4.24
-    prettier: ^3.0.0
-    prettier-plugin-tailwindcss: ^0.5.11
-    react: 18.3.1
-    react-dom: 18.3.1
-    react-icons: ^5.5.0
-    react-share: 5.1.2
-    reading-time: 1.5.0
-    rehype-autolink-headings: ^7.1.0
-    rehype-citation: ^2.0.0
-    rehype-katex: ^7.0.0
-    rehype-preset-minify: 7.0.0
-    rehype-prism-plus: ^2.0.0
-    rehype-slug: ^6.0.0
-    remark-gfm: ^4.0.0
-    remark-github-blockquote-alert: ^1.2.1
-    remark-math: ^6.0.0
-    sharp: ^0.34.5
-    soundcloud-downloader: ^1.0.0
-    tailwindcss: ^3.4.3
-    typescript: 5.9.3
-    zod: ^3.22.4
-  languageName: unknown
-  linkType: soft
-
 "decode-named-character-reference@npm:^1.0.0":
   version: 1.2.0
   resolution: "decode-named-character-reference@npm:1.2.0"
@@ -9106,6 +9052,13 @@ __metadata:
   version: 1.4.1
   resolution: "merge2@npm:1.4.1"
   checksum: 7268db63ed5169466540b6fb947aec313200bcf6d40c5ab722c22e242f651994619bcd85601602972d3c85bd2cc45a358a4c61937e9f11a061919a1da569b0c2
+  languageName: node
+  linkType: hard
+
+"meriyah@npm:^6.1.4":
+  version: 6.1.4
+  resolution: "meriyah@npm:6.1.4"
+  checksum: ea10edbc6189cfb1e62111d847db4218b96f7a29a1b25cf0c9b6ccef7a95e50f2fe403f73375ff84ff13120529755687bc5d3966a799792253707d07ec75c3d8
   languageName: node
   linkType: hard
 
@@ -13668,6 +13621,78 @@ __metadata:
   checksum: f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
   languageName: node
   linkType: hard
+
+"youtubei.js@npm:^17.0.1":
+  version: 17.0.1
+  resolution: "youtubei.js@npm:17.0.1"
+  dependencies:
+    "@bufbuild/protobuf": ^2.0.0
+    meriyah: ^6.1.4
+  checksum: 4d220810f865c932498be58720be1cf7cba09eac415325248a0fec752cf919944a9cc1648d1414ea738112924c9d8301afbc64b69491366528ceaaaae647837e
+  languageName: node
+  linkType: hard
+
+"youtubeshortdownloader@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "youtubeshortdownloader@workspace:."
+  dependencies:
+    "@headlessui/react": 2.2.10
+    "@microsoft/clarity": ^1.0.2
+    "@next/bundle-analyzer": 16.2.4
+    "@svgr/webpack": ^8.0.1
+    "@tailwindcss/forms": ^0.5.7
+    "@tailwindcss/typography": ^0.5.12
+    "@types/mdx": ^2.0.12
+    "@types/react": 18.3.28
+    "@types/react-dom": 18.3.7
+    "@typescript-eslint/eslint-plugin": 8.59.0
+    "@typescript-eslint/parser": 8.59.0
+    autoprefixer: ^10.4.13
+    body-scroll-lock: ^4.0.0-beta.0
+    cheerio: ^1.1.0
+    contentlayer2: 0.5.8
+    cross-env: ^7.0.3
+    date-fns: ^4.1.0
+    eslint: 9.39.4
+    eslint-config-next: 16.2.4
+    eslint-config-prettier: ^8.8.0
+    eslint-plugin-prettier: ^5.0.0
+    github-slugger: ^2.0.0
+    hast-util-from-html-isomorphic: ^2.0.0
+    husky: ^9.1.7
+    jsdom: ^26.1.0
+    lint-staged: ^13.0.0
+    lucide-react: ^0.525.0
+    next: 16.2.4
+    next-contentlayer2: 0.5.8
+    next-intl: 4.9.1
+    next-themes: 0.4.6
+    pliny: 0.4.1
+    postcss: ^8.4.24
+    prettier: ^3.0.0
+    prettier-plugin-tailwindcss: ^0.5.11
+    react: 18.3.1
+    react-dom: 18.3.1
+    react-icons: ^5.5.0
+    react-share: 5.1.2
+    reading-time: 1.5.0
+    rehype-autolink-headings: ^7.1.0
+    rehype-citation: ^2.0.0
+    rehype-katex: ^7.0.0
+    rehype-preset-minify: 7.0.0
+    rehype-prism-plus: ^2.0.0
+    rehype-slug: ^6.0.0
+    remark-gfm: ^4.0.0
+    remark-github-blockquote-alert: ^1.2.1
+    remark-math: ^6.0.0
+    sharp: ^0.34.5
+    soundcloud-downloader: ^1.0.0
+    tailwindcss: ^3.4.3
+    typescript: 5.9.3
+    youtubei.js: ^17.0.1
+    zod: ^3.22.4
+  languageName: unknown
+  linkType: soft
 
 "zod-validation-error@npm:^3.5.0 || ^4.0.0":
   version: 4.0.2

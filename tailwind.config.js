@@ -1,9 +1,8 @@
-// @ts-check
-const { fontFamily } = require("tailwindcss/defaultTheme")
-const colors = require("tailwindcss/colors")
+import forms from "@tailwindcss/forms"
+import typography from "@tailwindcss/typography"
 
 /** @type {import("tailwindcss/types").Config } */
-module.exports = {
+const config = {
   trailingSlash: true,
   content: [
     "./node_modules/pliny/**/*.js",
@@ -22,21 +21,18 @@ module.exports = {
         13: "3.25rem",
         14: "3.5rem",
       },
-      fontFamily: {
-        sans: fontFamily.sans,
-      },
       colors: {
         primary: {
-          50: "#e8fef7", // 极淡的青绿色，适合背景
-          100: "#d1fdf0",
-          200: "#a3fbe1",
-          300: "#75f9d2",
-          400: "#47f7c3",
-          500: "#16f2b3", // Base color (Mars Green)
-          600: "#12c28f", // 略深，适合 Hover 状态
-          700: "#0d916b", // 深色，适合点击状态或边框
-          800: "#096147",
-          900: "#043024", // 极深，适合文字或深色模式
+          50: "#eef8f6",
+          100: "#d5efe9",
+          200: "#abdfd4",
+          300: "#7ec9b9",
+          400: "#4fad9a",
+          500: "#1a8f7a",
+          600: "#116466", // Mars Green 马尔斯绿
+          700: "#0d524f",
+          800: "#093d3b",
+          900: "#052928",
           // 50: '#E6FFFC', // Lightest cyan (95% luminosity)
           // 100: '#B3FFF5',
           // 200: '#80FFEE',
@@ -117,5 +113,7 @@ module.exports = {
       }),
     },
   },
-  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")],
+  plugins: [forms, typography],
 }
+
+export default config

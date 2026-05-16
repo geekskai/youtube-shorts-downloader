@@ -1,6 +1,6 @@
 # PRD: Decimal to Text
 
-**Product:** DecimalTools
+**Product:** YoutubeShortDownloader
 **Feature:** `decimal-to-text`
 **Status:** MVP shipped in repo
 **Version:** 1.0
@@ -36,7 +36,7 @@
 ### 次目标
 
 - 承接 `decimal to text`、`decimal to words`、`spell decimal number` 等搜索意图
-- 强化 DecimalTools 在 “decimal-related utilities” 主题下的工具覆盖
+- 强化 YoutubeShortDownloader 在 “decimal-related utilities” 主题下的工具覆盖
 - 形成可复用的 SEO 页面模板：工具 + quick answer + FAQ + structured data
 
 ---

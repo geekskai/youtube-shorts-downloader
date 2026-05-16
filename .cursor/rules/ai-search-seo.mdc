@@ -320,7 +320,7 @@ export function generateToolSchema(tool: Tool) {
     "@type": "WebApplication",
     name: tool.name,
     description: tool.description,
-    url: `https://decimaltools.com${tool.href}`,
+    url: `https://youtubeshortdownloader.com${tool.href}`,
     applicationCategory: "UtilityApplication",
     operatingSystem: "Any",
     offers: {
@@ -330,8 +330,8 @@ export function generateToolSchema(tool: Tool) {
     },
     provider: {
       "@type": "Organization",
-      name: "decimaltools",
-      url: "https://decimaltools.com",
+      name: "youtubeshortdownloader",
+      url: "https://youtubeshortdownloader.com",
     },
     featureList: tool.features,
     // Only add accurate data

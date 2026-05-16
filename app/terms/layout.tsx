@@ -26,16 +26,16 @@ export const generateMetadata = async (): Promise<Metadata> => {
     openGraph: {
       title: title,
       description: description,
-      url: "https://decimaltools.com/terms/",
+      url: "https://youtubeshortdownloader.com/terms/",
       siteName: siteMetadata.title,
       images: [siteMetadata.socialBanner],
       locale: "en_US",
       type: "website",
     },
     alternates: {
-      canonical: "https://decimaltools.com/terms/",
+      canonical: "https://youtubeshortdownloader.com/terms/",
       languages: {
-        "x-default": "https://decimaltools.com/terms/",
+        "x-default": "https://youtubeshortdownloader.com/terms/",
       },
       types: {
         "application/rss+xml": `${siteMetadata.siteUrl}/feed.xml`,
@@ -73,7 +73,7 @@ export default async function RootLayout({
   const { locale } = await params
   return (
     <html lang={locale} className={`scroll-smooth`} suppressHydrationWarning>
-      <link rel="apple-touch-icon" sizes="76x76" href={`${basePath}/static/decimaltools.png`} />
+      <link rel="apple-touch-icon" sizes="76x76" href={`${basePath}/static/logo.png`} />
       <link
         rel="icon"
         type="image/png"

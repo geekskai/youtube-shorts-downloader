@@ -35,7 +35,7 @@ export const generateMetadata = async (): Promise<Metadata> => {
     alternates: {
       canonical: "./",
       // languages: {
-      //   "x-default": "https://decimaltools.com/blog",
+      //   "x-default": "https://youtubeshortdownloader.com/blog",
       // },
       types: {
         "application/rss+xml": `${siteMetadata.siteUrl}/feed.xml`,
@@ -72,7 +72,7 @@ export default async function RootLayout({
   const { locale } = await params
   return (
     <html lang={locale} className={`scroll-smooth`} suppressHydrationWarning>
-      <link rel="apple-touch-icon" sizes="76x76" href={`${basePath}/static/decimaltools.png`} />
+      <link rel="apple-touch-icon" sizes="76x76" href={`${basePath}/static/logo.png`} />
       <link
         rel="icon"
         type="image/png"

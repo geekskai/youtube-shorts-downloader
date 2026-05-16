@@ -1,0 +1,40 @@
+---
+description: Page and section width standard (max-w-7xl) — reference app/Main.tsx
+alwaysApply: true
+---
+
+# Layout Width Standard
+
+Follow [app/Main.tsx](mdc:app/Main.tsx) for all new or updated page sections. This keeps content aligned with Header (`components/Header.tsx`) and Footer (`components/SiteFooter.tsx`).
+
+## Section container (canonical)
+
+Use this on every **section inner wrapper** (not on `<main>` when sections already define width):
+
+```tsx
+const SECTION = "mx-auto w-full max-w-7xl px-4 sm:px-6"
+```
+
+Equivalent inline classes are acceptable; prefer extracting `SECTION` when a file has multiple sections (as in `Main.tsx`).
+
+## Root layout
+
+- `app/[locale]/layout.tsx` `<main>`: **full width** — `min-h-[54vh] w-full overflow-x-hidden`. Do **not** put `max-w-7xl` or horizontal padding on root `main`; sections own width and padding.
+- Segment layouts (blog, privacy, tags, terms): may use `main` with `mx-auto min-h-[54vh] max-w-7xl px-4 sm:px-6` when the page has no per-section wrappers.
+
+## Header / footer
+
+- Header row: `mx-auto flex w-full max-w-7xl … px-4 sm:px-6`
+- Footer inner: `mx-auto max-w-7xl px-4 sm:px-6` (footer may add `lg:px-8` if already present)
+
+## Inner content (optional)
+
+- Full-bleed tools (e.g. downloader): `w-full` inside `SECTION` — no extra `max-w-*` on PC.
+- Long prose / FAQ / how-to lists: may use `max-w-3xl` on mobile and `lg:max-w-7xl` on large screens for readability while the **section** stays `max-w-7xl`.
+- Hero titles: `max-w-xl` center on mobile, `lg:max-w-7xl` when appropriate.
+
+## Do not
+
+- Stack `max-w-7xl` on both root `main` and section wrappers (double constraint / misaligned padding).
+- Use `max-w-6xl`, `max-w-screen-xl`, or arbitrary widths for primary page sections without explicit user request.
+- Remove horizontal padding from sections; always include `px-4 sm:px-6` on the 7xl container.

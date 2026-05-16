@@ -237,7 +237,7 @@ const SEOMeta = ({
     "school closure predictor",
     "snow day probability"
   ]}
-  canonical="https://decimaltools.com/tools/snow-day-calculator"
+  canonical="https://youtubeshortdownloader.com/tools/snow-day-calculator"
 />
 ```
 
@@ -251,7 +251,7 @@ const WebApplicationSchema = {
   name: "Snow Day Calculator",
   description:
     "Free snow day calculator predicts school closure probability using real-time weather data",
-  url: "https://decimaltools.com/tools/snow-day-calculator",
+  url: "https://youtubeshortdownloader.com/tools/snow-day-calculator",
   applicationCategory: "UtilityApplication",
   operatingSystem: "Any",
   permissions: "location",
@@ -262,8 +262,8 @@ const WebApplicationSchema = {
   },
   provider: {
     "@type": "Organization",
-    name: "decimaltools",
-    url: "https://decimaltools.com",
+    name: "youtubeshortdownloader",
+    url: "https://youtubeshortdownloader.com",
   },
   featureList: [
     "Real-time weather data integration",

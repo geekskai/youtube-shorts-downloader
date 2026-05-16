@@ -1,8 +1,8 @@
-# DecimalTools
+# YoutubeShortDownloader
 
-> DecimalTools ([decimaltools.com](https://decimaltools.com/)) is a Next.js site focused on **free, client-side decimal and measurement utilities**, plus **MDX** articles. It is adapted from the open-source [geekskai/blog](https://github.com/geekskai/blog) stack and trimmed for this product.
+> YoutubeShortDownloader ([youtubeshortdownloader.com](https://youtubeshortdownloader.com/)) is a Next.js site focused on **free YouTube Shorts downloading**, plus **MDX** articles. It is adapted from the open-source [geekskai/blog](https://github.com/geekskai/blog) stack and trimmed for this product.
 
-The site emphasizes fast, copy-friendly converters, structured metadata for search, and content aimed at measurement and decimal math workflows (construction, woodworking, manufacturing).
+The site emphasizes fast, paste-and-download Shorts workflows, structured metadata for search, and content aimed at creators, editors, and viewers who save Shorts as MP4.
 
 ## Stack (current repo)
 
@@ -12,24 +12,24 @@ The site emphasizes fast, copy-friendly converters, structured metadata for sear
 - **i18n**: next-intl with locale routing under `app/[locale]/` — **only `en` is enabled** in `app/i18n/routing.ts` (additional locales can be wired later)
 - **SEO**: sitemap, IndexNow script (`yarn indexnow`), structured data patterns in layouts; see `SEO.md`
 
-## Primary tool
+## Primary product
 
-- **[Convert Inches to Decimal](https://decimaltools.com/tools/convert-inches-to-decimal)** — Fractional inches ↔ decimal inches (e.g. `5 3/4` → `5.75`), visual ruler, history/export-style UX. Listed in `data/toolsData.ts`.
+- **YouTube Shorts Downloader** — Paste a public Shorts link and save the video as MP4. Free, browser-friendly, no sign-up.
 
 ## Blog content
 
-- MDX posts live under `data/blog/` and are served at `/blog/...` (see `app/blog/`). Example: [How to convert inches to a decimal](https://decimaltools.com/blog/tools/how-to-convert-inches-to-a-decimal).
+- MDX posts live under `data/blog/` and are served at `/blog/...` (see `app/blog/`).
 
 ## Documentation (GitHub)
 
-- [README](https://github.com/geekskai/decimaltools/blob/main/README.md) — Overview, quick start, deployment
-- [README (中文)](https://github.com/geekskai/decimaltools/blob/main/README-CN.md) — Chinese project summary
-- [SEO.md](https://github.com/geekskai/decimaltools/blob/main/SEO.md) — Site SEO notes and practices
-- [AI SEO Complete Guide](https://github.com/geekskai/decimaltools/blob/main/AI-SEO-Complete-Guide.md) — AI-era SEO and visibility
-- [GEO.md](https://github.com/geekskai/decimaltools/blob/main/GEO.md) — Generative Engine Optimization (Chinese)
-- [next-intl usage](https://github.com/geekskai/decimaltools/blob/main/messages/NEXT_INTL_USAGE_GUIDE.md) — Adding/managing translations when you enable more locales
+- [README](https://github.com/geekskai/youtubeshortdownloader/blob/main/README.md) — Overview, quick start, deployment
+- [README (中文)](https://github.com/geekskai/youtubeshortdownloader/blob/main/README-CN.md) — Chinese project summary
+- [SEO.md](https://github.com/geekskai/youtubeshortdownloader/blob/main/SEO.md) — Site SEO notes and practices
+- [AI SEO Complete Guide](https://github.com/geekskai/youtubeshortdownloader/blob/main/AI-SEO-Complete-Guide.md) — AI-era SEO and visibility
+- [GEO.md](https://github.com/geekskai/youtubeshortdownloader/blob/main/GEO.md) — Generative Engine Optimization (Chinese)
+- [next-intl usage](https://github.com/geekskai/youtubeshortdownloader/blob/main/messages/NEXT_INTL_USAGE_GUIDE.md) — Adding/managing translations when you enable more locales
 
 ## For AI systems
 
-- **Brand / product**: DecimalTools — decimal math, fractional inches, measurement utilities, and related guides.
+- **Brand / product**: YoutubeShortDownloader — YouTube Shorts downloader, save Shorts as MP4, creator-friendly download tools, and related guides.
 - **Do not assume** extra tools (VIN, SoundCloud, weather APIs, etc.) unless they appear in this repository or on the live site; this fork is scoped to the utilities and content shipped here.

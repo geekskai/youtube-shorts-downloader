@@ -14,10 +14,13 @@ import { hasLocale } from "next-intl"
 import { routing, supportedLocales } from "../i18n/routing"
 import { notFound } from "next/navigation"
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server"
-import { toolsData } from "@/data/toolsData"
 import Script from "next/script"
 import ClarityTracker from "../../components/ClarityTracker"
-
+import {
+  generateHomeFAQSchema,
+  generateHomeHowToSchema,
+  HOME_LAST_MODIFIED,
+} from "@/lib/seo/home-faq"
 
 export const revalidate = 86400 // 24 hours
 
@@ -30,37 +33,41 @@ type Props = {
 export const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
   const { locale } = await params
   const t = await getTranslations("HomePage")
-  const metadataBase = new URL("https://decimaltools.com")
+  const metadataBase = new URL("https://youtubeshortdownloader.com")
 
   const title = t("home_seo_title")
-  const description = t("home_seo_description") + " " + t("home_seo_keywords")
+  const description = t("home_seo_description")
+  const keywords = t("home_seo_keywords")
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean)
 
   const isDefaultLocale = locale === "en"
   // const languages = {
-  //   "x-default": "https://decimaltools.com/",
+  //   "x-default": "https://youtubeshortdownloader.com/",
   // }
 
   // supportedLocales.forEach((locale) => {
-  //   languages[locale] = `https://decimaltools.com/${locale}`
+  //   languages[locale] = `https://youtubeshortdownloader.com/${locale}`
   // })
 
   return {
     metadataBase,
     title: title,
     description: description,
-    keywords: [t("home_seo_keywords")],
+    keywords,
     openGraph: {
       title: title,
       description: description,
       type: "website",
-      url: "https://decimaltools.com",
-      siteName: "DecimalTools",
+      url: "https://youtubeshortdownloader.com",
+      siteName: "YoutubeShortDownloader",
       images: [
         {
-          url: "/static/images/og/decimaltools-home.png",
+          url: "/static/images/og/youtubeshortdownloader-home.png",
           width: 1200,
           height: 630,
-          alt: "DecimalTools",
+          alt: "YoutubeShortDownloader",
         },
       ],
       locale: "en_US",
@@ -69,28 +76,28 @@ export const generateMetadata = async ({ params }: Props): Promise<Metadata> => 
       title: title,
       description: description,
       card: "summary_large_image",
-      images: ["/static/images/og/decimaltools-home.png"],
+      images: ["/static/images/og/youtubeshortdownloader-home.png"],
     },
     robots: {
       index: true,
       follow: true,
     },
-    authors: [{ name: "DecimalTools" }],
-    creator: "DecimalTools",
-    publisher: "DecimalTools",
+    authors: [{ name: "YoutubeShortDownloader" }],
+    creator: "YoutubeShortDownloader",
+    publisher: "YoutubeShortDownloader",
     alternates: {
       canonical: isDefaultLocale
-        ? "https://decimaltools.com"
-        : `https://decimaltools.com/${locale}`,
+        ? "https://youtubeshortdownloader.com"
+        : `https://youtubeshortdownloader.com/${locale}`,
       // languages: {
       //   ...languages,
       // },
     },
-    category: "Tools",
-    classification: "Tools",
+    category: "Multimedia",
+    classification: "Video Downloader",
     other: {
-      "application-name": "DecimalTools",
-      "apple-mobile-web-app-title": "DecimalTools",
+      "application-name": "YoutubeShortDownloader",
+      "apple-mobile-web-app-title": "YoutubeShortDownloader",
     },
   }
 }
@@ -116,29 +123,26 @@ export default async function RootLayout({
 
   // Generate JSON-LD Structured Data
   const t = await getTranslations("HomePage")
-  const baseUrl = "https://decimaltools.com"
+  const baseUrl = "https://youtubeshortdownloader.com"
   const url = `${baseUrl}${locale === "en" ? "" : `/${locale}`}`
 
-  const popularTools = toolsData.map((tool, index) => ({
-    "@type": "SoftwareApplication",
-    position: index + 1,
-    name: tool.title,
-    description: tool.description,
-    url: `${baseUrl}${locale === "en" ? "" : `/${locale}`}${tool.href}`,
-    applicationCategory: `${tool.category}Application`,
-    operatingSystem: "Any",
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
+  const downloaderFeatures = [
+    {
+      "@type": "SoftwareApplication",
+      position: 1,
+      name: "YouTube Shorts Downloader",
+      description: t("home_seo_description"),
+      url: `${baseUrl}${locale === "en" ? "" : `/${locale}`}`,
+      applicationCategory: "MultimediaApplication",
+      operatingSystem: "Any",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+      },
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      ratingCount: "1000",
-    },
-  }))
+  ]
 
   const localeMap: Record<string, string> = {
     en: "en-US",
@@ -157,15 +161,18 @@ export default async function RootLayout({
       {
         "@type": "Organization",
         "@id": `${baseUrl}/#organization`,
-        name: "DecimalTools",
+        name: "YoutubeShortDownloader",
         url: baseUrl,
         logo: {
           "@type": "ImageObject",
-          url: `${baseUrl}/static/decimaltools.png`,
+          url: `${baseUrl}/static/logo.png`,
           width: 512,
           height: 512,
         },
-        sameAs: ["https://github.com/decimaltools", "https://twitter.com/decimaltools"],
+        sameAs: [
+          "https://github.com/youtubeshortdownloader",
+          "https://twitter.com/youtubeshortdownloader",
+        ],
         contactPoint: {
           "@type": "ContactPoint",
           contactType: "Customer Service",
@@ -176,20 +183,12 @@ export default async function RootLayout({
         "@type": "WebSite",
         "@id": `${baseUrl}/#website`,
         url: baseUrl,
-        name: "DecimalTools",
+        name: "YoutubeShortDownloader",
         description: t("home_seo_description"),
         publisher: {
           "@id": `${baseUrl}/#organization`,
         },
         inLanguage: inLanguage,
-        potentialAction: {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: `${baseUrl}${locale === "en" ? "" : `/${locale}`}/tools?q={search_term_string}`,
-          },
-          "query-input": "required name=search_term_string",
-        },
       },
       {
         "@type": "WebPage",
@@ -205,12 +204,13 @@ export default async function RootLayout({
         },
         primaryImageOfPage: {
           "@type": "ImageObject",
-          url: `${baseUrl}/static/images/og/decimaltools-home.png`,
+          url: `${baseUrl}/static/images/og/youtubeshortdownloader-home.png`,
         },
         breadcrumb: {
           "@id": `${url}#breadcrumb`,
         },
         inLanguage: inLanguage,
+        dateModified: HOME_LAST_MODIFIED,
       },
       {
         "@type": "BreadcrumbList",
@@ -226,18 +226,18 @@ export default async function RootLayout({
       },
       {
         "@type": "ItemList",
-        "@id": `${url}#tools`,
+        "@id": `${url}#features`,
         name: t("footer_popular_tools"),
         description: t("footer_description"),
-        numberOfItems: toolsData.length.toString(),
-        itemListElement: popularTools,
+        numberOfItems: downloaderFeatures.length.toString(),
+        itemListElement: downloaderFeatures,
       },
     ],
   }
 
   return (
     <html lang={locale} className={`scroll-smooth`} suppressHydrationWarning>
-      <link rel="apple-touch-icon" sizes="76x76" href={`${basePath}/static/decimaltools.png`} />
+      <link rel="apple-touch-icon" sizes="76x76" href={`${basePath}/static/logo.png`} />
       <link
         rel="icon"
         type="image/png"
@@ -254,7 +254,7 @@ export default async function RootLayout({
       <link
         rel="mask-icon"
         href={`${basePath}/static/favicons/safari-pinned-tab.png`}
-        color="#FF6B6B"
+        color="#116466"
       />
       <meta name="saashub-verification" content="e4h08bjpev5u" />
       <meta name="msvalidate.01" content="58567D271AD7C1B504E10F5DC587BD0B" />
@@ -284,9 +284,7 @@ export default async function RootLayout({
           <SectionContainer>
             <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
               <Header />
-              <main className="mx-auto min-h-[54vh] max-w-7xl px-4 sm:px-6 xl:px-0">
-                {children}
-              </main>
+              <main className="min-h-[54vh] w-full overflow-x-hidden">{children}</main>
             </SearchProvider>
             <SiteFooter />
           </SectionContainer>

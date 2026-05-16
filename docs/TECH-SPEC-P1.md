@@ -50,7 +50,7 @@
 ### 3.1 推荐路径（统一收敛到 `/tools`）
 
 主工具：`/tools/fraction-to-decimal`（枢纽，无分数参数）。
-pSEO hub：`/tools/as-a-decimal`。  
+pSEO hub：`/tools/as-a-decimal`。
 pSEO 落地页：`/tools/as-a-decimal/[n]-[d]`（如 `/tools/as-a-decimal/3-8`）。
 
 该方案的好处：
@@ -81,9 +81,9 @@ PRD 有 mixed number 需求。建议 **二期**再开 `/tools/mixed-[whole]-[n]-
 
 ### 4.2 `generateMetadata`
 
-- **title**：如 `What is 3/8 as a decimal? | DecimalTools`（模板 + 数值来自 `lib`）。
+- **title**：如 `What is 3/8 as a decimal? | YoutubeShortDownloader`（模板 + 数值来自 `lib`）。
 - **description**：含 **直接答案**（0.375）与前 155 字内自然语句。
-- **canonical**：`en` → `https://decimaltools.com/tools/as-a-decimal/3-8`；其它语言带 `/${locale}/`。
+- **canonical**：`en` → `https://youtubeshortdownloader.com/tools/as-a-decimal/3-8`；其它语言带 `/${locale}/`。
 - **Open Graph**：可与主工具共用占位图或 pSEO 专用图（P1 可后补）。
 
 ### 4.3 页面结构（RSC + 客户端岛）

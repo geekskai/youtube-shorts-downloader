@@ -27,4 +27,4 @@ jobs:
           node-version: "20"
 
       - name: Submit sitemap URLs to IndexNow
-        run: node ./scripts/submit-indexnow.mjs --key-location "https://decimaltools.com/319ccd32fd714727af6aea1835d9b02a.txt"
+        run: node ./scripts/submit-indexnow.mjs --key-location "https://youtubeshortdownloader.com/319ccd32fd714727af6aea1835d9b02a.txt"

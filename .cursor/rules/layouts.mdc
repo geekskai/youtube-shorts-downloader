@@ -5,6 +5,7 @@ alwaysApply: false
 ---
 # Layouts Guide
 
+- **Section width**: See [layout-width.mdc](mdc:.cursor/rules/layout-width.mdc) and [app/Main.tsx](mdc:app/Main.tsx) — `max-w-7xl` + `px-4 sm:px-6` on section wrappers; root locale `main` stays full width.
 - Layouts should provide stable structure first, then decorative polish.
 - Prefer backgrounds on the layout container itself instead of positioned decorative children.
 - Keep page sections in normal document flow to reduce mobile CLS risk.

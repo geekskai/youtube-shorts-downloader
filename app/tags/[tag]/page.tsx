@@ -42,9 +42,9 @@ export async function generateMetadata({
       siteMetadata.title,
     ],
     alternates: {
-      canonical: `https://decimaltools.com/tags/${tag}`,
+      canonical: `https://youtubeshortdownloader.com/tags/${tag}`,
       // languages: {
-      //   "x-default": `https://decimaltools.com/tags/${tag}`,
+      //   "x-default": `https://youtubeshortdownloader.com/tags/${tag}`,
       // },
       types: {
         "application/rss+xml": `${siteMetadata.siteUrl}/tags/${tag}/feed.xml`,

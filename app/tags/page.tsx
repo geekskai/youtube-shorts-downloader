@@ -21,7 +21,7 @@ export const metadata = genPageMetadata({
     "article tags",
   ],
   alternates: {
-    canonical: "https://decimaltools.com/tags/",
+    canonical: "https://youtubeshortdownloader.com/tags/",
   },
   other: {
     "last-modified": new Date().toISOString(),

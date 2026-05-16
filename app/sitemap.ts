@@ -1,109 +1,24 @@
 import { MetadataRoute } from "next"
 import { allBlogs } from "contentlayer/generated"
 import siteMetadata from "@/data/siteMetadata"
-import { toolsData } from "@/data/toolsData"
-import {
-  PSEO_ENABLED_LOCALES,
-  PSEO_LAST_MODIFIED_DATE,
-  getPseoPath,
-  pseoFractionPairs,
-} from "@/data/pseo-fractions"
-import { supportedLocales } from "./i18n/routing"
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = siteMetadata.siteUrl
-  const defaultLocale = "en"
-  // const VIN_VEHICLE_TYPES = ["motorcycle", "rv", "trailer", "classic-car"] as const
 
-  // Generate blog routes for all locales
   const blogRoutes = allBlogs
     .filter((post) => !post.draft)
     .map((post) => ({
       url: `${siteUrl}/${post.path}`,
       lastModified: post.lastmod || post.date,
-      // priority: 0.7,
-      // changeFrequency: "monthly" as const,
     }))
 
-  const routes = ["", "blog", "terms", "privacy", "tools", "tags", "about"].map((route) => ({
+  const routes = ["", "blog", "terms", "privacy", "tags", "about"].map((route) => ({
     url: `${siteUrl}/${route}`,
     lastModified: new Date().toISOString().split("T")[0],
-    // priority: route === "" ? 1.0 : route === "tools/" ? 0.9 : 0.8,
-    // changeFrequency: "weekly" as const,
   }))
 
-  // Generate static routes for all locales
-  // const staticRoutes = ["", "blog", "projects", "tools", "tags", "about"]
-  // const staticRoutes = ["tools"].flatMap((route) => {
-  //   return supportedLocales.map((locale) => ({
-  //     url: `${siteUrl}${locale === defaultLocale ? "" : `/${locale}`}/${route}`,
-  //     lastModified: new Date().toISOString().split("T")[0],
-  //     // priority: route === "" ? 1.0 : route === "tools/" ? 0.9 : 0.8,
-  //     // changeFrequency: "weekly" as const,
-  //     // Add alternates for SEO
-  //     alternates: {
-  //       languages: supportedLocales.reduce(
-  //         (acc, lang) => {
-  //           acc[lang] = `${siteUrl}${lang === defaultLocale ? "" : `/${lang}`}/${route}`
-  //           return acc
-  //         },
-  //         {} as Record<string, string>
-  //       ),
-  //     },
-  //   }))
-  // })
-
-  // Generate tool routes for all locales
-  const toolRoutes = toolsData.flatMap((tool) => {
-    return supportedLocales.map((locale) => {
-      // Extract the tool path from href (remove leading slash)
-      const toolPath = tool.href.startsWith("/") ? tool.href.slice(1) : tool.href
-
-      return {
-        url: `${siteUrl}${locale === defaultLocale ? "" : `/${locale}`}/${toolPath}`,
-        lastModified: new Date().toISOString().split("T")[0],
-        // Set higher priority for tools since they're important pages
-        // priority: 0.8,
-        // changeFrequency: "weekly" as const,
-        // Add alternates for SEO
-        // alternates: {
-        //   languages: supportedLocales.reduce(
-        //     (acc, lang) => {
-        //       acc[lang] = `${siteUrl}${lang === defaultLocale ? "" : `/${lang}`}/${toolPath}`
-        //       return acc
-        //     },
-        //     {} as Record<string, string>
-        //   ),
-        // },
-      }
-    })
-  })
-
-  const pseoRoutes = pseoFractionPairs.flatMap(({ numerator, denominator }) =>
-    supportedLocales
-      .filter((locale) =>
-        PSEO_ENABLED_LOCALES.includes(locale as (typeof PSEO_ENABLED_LOCALES)[number])
-      )
-      .map((locale) => ({
-        url: `${siteUrl}${locale === defaultLocale ? "" : `/${locale}`}${getPseoPath(numerator, denominator)}`,
-        lastModified: PSEO_LAST_MODIFIED_DATE,
-      }))
-  )
-
-  // Generate robots.txt friendly sitemap
-  const allRoutes = [
-    ...routes,
-    ...blogRoutes,
-    ...toolRoutes,
-    ...pseoRoutes,
-    // ...staticRoutes,
-    // ...vinDecoderExpansionRoutes,
-  ]
-
-  // Remove duplicates and sort by priority
-  const uniqueRoutes = allRoutes.filter(
+  const allRoutes = [...routes, ...blogRoutes]
+  return allRoutes.filter(
     (route, index, self) => index === self.findIndex(({ url }) => url === route.url)
   )
-
-  return uniqueRoutes
 }

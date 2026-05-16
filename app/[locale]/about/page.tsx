@@ -5,9 +5,9 @@ import { coreContent } from "pliny/utils/contentlayer"
 import { genPageMetadata } from "app/seo"
 import siteMetadata from "@/data/siteMetadata"
 
-const ABOUT_TITLE = "About DecimalTools"
+const ABOUT_TITLE = "About YoutubeShortDownloader"
 const ABOUT_DESCRIPTION =
-  "DecimalTools offers free AI-powered tools and online utilities for productivity, code, and conversions. Learn what we build, who maintains the site, and how to contact us."
+  "YoutubeShortDownloader is a free YouTube Shorts downloader. Paste a link, save MP4, and learn who maintains the site and how to contact us."
 
 export const metadata = genPageMetadata({
   title: ABOUT_TITLE,
@@ -42,7 +42,7 @@ export default function Page() {
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "DecimalTools",
+    name: "YoutubeShortDownloader",
     url: siteUrl,
     logo: logoUrl,
     email: siteMetadata.email,
@@ -57,7 +57,7 @@ export default function Page() {
       email: mainContent.email,
       sameAs: [mainContent.github, mainContent.linkedin, mainContent.twitter].filter(Boolean),
       jobTitle: "Maintainer",
-      worksFor: { "@type": "Organization", name: "DecimalTools", url: siteUrl },
+      worksFor: { "@type": "Organization", name: "YoutubeShortDownloader", url: siteUrl },
     },
   }
 

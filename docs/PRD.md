@@ -1,10 +1,10 @@
-# PRD: DecimalTools — Feature Expansion & SEO Roadmap
+# PRD: YoutubeShortDownloader — Feature Expansion & SEO Roadmap
 
-**Product:** DecimalTools ([decimaltools.com](https://decimaltools.com) / repo: `decimaltools`)  
-**Document type:** SEO-led utility roadmap  
-**Status:** Draft  
-**Version:** 1.2  
-**Last updated:** April 18, 2026  
+**Product:** YoutubeShortDownloader ([youtubeshortdownloader.com](https://youtubeshortdownloader.com) / repo: `youtubeshortdownloader`)
+**Document type:** SEO-led utility roadmap
+**Status:** Draft
+**Version:** 1.2
+**Last updated:** April 18, 2026
 
 ---
 
@@ -12,7 +12,7 @@
 
 This is a **high-potential niche**. The data shows **massive search volume** (on the order of **3.7M+** monthly searches in the exported “decimal” cluster) for **fraction-to-decimal** conversions and related math utilities, with **low-to-medium Keyword Difficulty (roughly KD 10–25)** on many head and mid-tail terms—an attractive profile for an **SEO-driven utility site**.
 
-**Goal:** Transform DecimalTools from a **single-purpose** property into a **Math & Unit Conversion Hub**: calculators for **fractions**, **mixed numbers**, **time**, **hex**, and **inches**, plus **programmatic landing pages** and **reference assets** (charts, worksheets). Success means **strong organic rankings**, **featured-snippet-friendly** answers, and **higher session duration** via related tools and internal links—not only raw traffic.
+**Goal:** Transform YoutubeShortDownloader from a **single-purpose** property into a **Math & Unit Conversion Hub**: calculators for **fractions**, **mixed numbers**, **time**, **hex**, and **inches**, plus **programmatic landing pages** and **reference assets** (charts, worksheets). Success means **strong organic rankings**, **featured-snippet-friendly** answers, and **higher session duration** via related tools and internal links—not only raw traffic.
 
 The **codebase** already ships **Convert Inches to Decimal** (fractional inches ↔ decimal inches, ruler, history, i18n). That covers part of the **inch / machinist** cluster but not the largest slice: **abstract fraction → decimal** (“3/8 as a decimal”), **charts**, **worksheets**, **time → decimal hours**, or **hex**.
 
@@ -49,7 +49,7 @@ Complementing the signals in the table below:
 
 ## 4. Product vision
 
-**Vision:** DecimalTools is the **fastest, clearest** place to get **decimals the user actually means**—fractions, mixed numbers, inches, clock time, or hex—with **answer-first** layouts, **optional steps**, and **SEO pages** aligned to real queries.
+**Vision:** YoutubeShortDownloader is the **fastest, clearest** place to get **decimals the user actually means**—fractions, mixed numbers, inches, clock time, or hex—with **answer-first** layouts, **optional steps**, and **SEO pages** aligned to real queries.
 
 **Positioning:** Keep **Inches ↔ Decimal** as the **authority** for fractional inches; add **Fraction ↔ Decimal** as the **primary volume engine**; add **Time → Decimal** as the **high-commercial-intent** adjacent product; add **Hex** as a **separate** developer surface.
 
@@ -152,8 +152,8 @@ Align with existing JSON-LD patterns in the project; extend—not fork—metadat
 
 **Example slug ideas (choose one scheme globally):**
 
-- `decimaltools.com/en/fraction-to-decimal/3-8`
-- `decimaltools.com/en/charts/fraction-to-decimal` (hub) + PDF path e.g. `.../fraction-to-decimal-chart.pdf` or static download route
+- `youtubeshortdownloader.com/en/fraction-to-decimal/3-8`
+- `youtubeshortdownloader.com/en/charts/fraction-to-decimal` (hub) + PDF path e.g. `.../fraction-to-decimal-chart.pdf` or static download route
 
 ### 8.3 UI / UX (conversion & SEO)
 
@@ -286,9 +286,9 @@ Align with existing JSON-LD patterns in the project; extend—not fork—metadat
 
 ### 14.6 Recommended sequencing（建议顺序）
 
-1. **P0** 分数工具 + 数学库 + 元数据与路由结构。  
-2. **P1** pSEO 模板 + 小批量 URL + sitemap + FAQ + 内链 + 预填。  
-3. **P2** 时间工具 → 图表/打印 → 分步与 HowTo 加深 → 英寸交叉推广。  
+1. **P0** 分数工具 + 数学库 + 元数据与路由结构。
+2. **P1** pSEO 模板 + 小批量 URL + sitemap + FAQ + 内链 + 预填。
+3. **P2** 时间工具 → 图表/打印 → 分步与 HowTo 加深 → 英寸交叉推广。
 4. **P3** Hex、可视化、练习模式、深色模式强化等。
 
 ### 14.7 与文中原有 Phase A–D 的对应关系

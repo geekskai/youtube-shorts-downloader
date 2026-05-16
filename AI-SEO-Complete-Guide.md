@@ -755,12 +755,12 @@ export function KnowledgeGraphSchema({ entities }: { entities: Entity[] }) {
     "@context": "https://schema.org",
     "@graph": entities.map((entity) => ({
       "@type": getSchemaType(entity.type),
-      "@id": `https://decimaltools.com/#${entity.id}`,
+      "@id": `https://youtubeshortdownloader.com/#${entity.id}`,
       name: entity.name,
       relatedTo: entity.relationships
         .filter((r) => r.type === "relatedTo")
         .map((r) => ({
-          "@id": `https://decimaltools.com/#${r.target}`,
+          "@id": `https://youtubeshortdownloader.com/#${r.target}`,
         })),
     })),
   }
@@ -915,7 +915,7 @@ export function generateToolSchema(tool: Tool) {
     "@type": "WebApplication",
     name: tool.name,
     description: tool.description,
-    url: `https://decimaltools.com${tool.href}`,
+    url: `https://youtubeshortdownloader.com${tool.href}`,
     applicationCategory: "UtilityApplication",
     operatingSystem: "Any",
     offers: {
@@ -925,8 +925,8 @@ export function generateToolSchema(tool: Tool) {
     },
     provider: {
       "@type": "Organization",
-      name: "decimaltools",
-      url: "https://decimaltools.com",
+      name: "youtubeshortdownloader",
+      url: "https://youtubeshortdownloader.com",
     },
     featureList: tool.features,
     // Only add accurate data
@@ -967,7 +967,7 @@ export function generateBreadcrumbSchema(items: BreadcrumbItem[]) {
       "@type": "ListItem",
       position: index + 1,
       name: item.name,
-      item: `https://decimaltools.com${item.url}`,
+      item: `https://youtubeshortdownloader.com${item.url}`,
     })),
   }
 }

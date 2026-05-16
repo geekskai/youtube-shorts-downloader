@@ -1,15 +1,15 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: "Free Decimal Converter & Calculator | DecimalTools",
-  author: "DecimalTools",
-  headerTitle: "DecimalTools",
+  title: "Free YouTube Shorts Downloader — Save MP4 Online | YoutubeShortDownloader",
+  author: "YoutubeShortDownloader",
+  headerTitle: "YoutubeShortDownloader",
   description:
-    "Free online decimal converter. Convert fractions to decimals, inches to decimal, decimals to hours and more — instantly. No sign-up. Works on mobile & desktop.",
+    "YoutubeShortDownloader — save YouTube Shorts as MP4 in your browser. Free online downloader and guides for creators, editors, and everyday viewers.",
   language: "en-us",
   theme: "dark", // system, dark or light
-  siteUrl: "https://decimaltools.com",
-  siteRepo: "https://github.com/geekskai/decimaltools",
-  siteLogo: `${process.env.BASE_PATH || ""}/static/decimaltools.png`,
+  siteUrl: "https://youtubeshortdownloader.com",
+  siteRepo: "https://github.com/geekskai/youtubeshortdownloader",
+  siteLogo: `${process.env.BASE_PATH || ""}/static/logo.png`,
   socialBanner: `${process.env.BASE_PATH || ""}/static/images/geekskai-blog.png`,
   mastodon: "https://mastodon.social/@mastodonuser",
   email: "geeks.kai@gmail.com",

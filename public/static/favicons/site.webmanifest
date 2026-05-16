@@ -1,9 +1,9 @@
 {
-  "name": "",
-  "short_name": "",
+  "name": "YoutubeShortDownloader",
+  "short_name": "YoutubeShortDownloader",
   "icons": [
     {
-      "src": "/decimaltools.png",
+      "src": "/static/logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }

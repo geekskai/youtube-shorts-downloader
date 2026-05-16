@@ -96,7 +96,7 @@ export default function ListLayoutWithTags({
                       <Image
                         alt={title}
                         src={images}
-                        className="h-[192px] w-[384px] rounded-lg object-cover object-center"
+                        className="h-[192px] w-[384px] rounded-lg object-contain object-center"
                         width={384}
                         height={192}
                         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 384px"

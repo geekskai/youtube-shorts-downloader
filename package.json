@@ -1,5 +1,5 @@
 {
-  "name": "decimaltools",
+  "name": "youtubeshortdownloader",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -53,6 +53,7 @@
     "remark-math": "^6.0.0",
     "soundcloud-downloader": "^1.0.0",
     "tailwindcss": "^3.4.3",
+    "youtubei.js": "^17.0.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {

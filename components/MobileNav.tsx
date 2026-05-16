@@ -3,10 +3,8 @@
 import { Dialog, Transition } from "@headlessui/react"
 import { disableBodyScroll, enableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock"
 import { Fragment, useState, useEffect, useRef } from "react"
-import Link from "./Link"
 import headerNavLinks from "@/data/headerNavLinks"
-import { ChevronDown, Zap, Menu, X } from "lucide-react"
-import { toolsData } from "@/data/toolsData"
+import { Menu, X, Zap } from "lucide-react"
 import LanguageSelect from "./LanguageSelect"
 import LinkNext from "next/link"
 import { useTranslations } from "next-intl"
@@ -14,195 +12,94 @@ import { useTranslations } from "next-intl"
 const MobileNav = () => {
   const t = useTranslations("HomePage")
   const [navShow, setNavShow] = useState(false)
-  const [toolsExpanded, setToolsExpanded] = useState(false)
-  const navRef = useRef(null)
+  const navRef = useRef<HTMLDivElement>(null)
+
+  const closeNav = () => {
+    setNavShow(false)
+    enableBodyScroll(navRef.current)
+  }
 
   const onToggleNav = () => {
     setNavShow((status) => {
       if (status) {
         enableBodyScroll(navRef.current)
-        setToolsExpanded(false) // Reset tools expansion when closing
       } else {
-        // Prevent scrolling
         disableBodyScroll(navRef.current)
       }
       return !status
     })
   }
 
-  const onToolsToggle = () => {
-    setToolsExpanded(!toolsExpanded)
-  }
-
   useEffect(() => {
     return clearAllBodyScrollLocks
-  })
+  }, [])
 
   return (
     <>
       <button
-        aria-label="Toggle Menu"
+        type="button"
+        aria-label="Open menu"
+        aria-expanded={navShow}
         onClick={onToggleNav}
-        className="rounded-lg p-2 transition-colors duration-300 hover:bg-slate-800/50 lg:hidden"
+        className="inline-flex min-h-11 min-w-11 touch-manipulation items-center justify-center rounded-lg text-slate-300 transition hover:bg-slate-800/50 hover:text-white lg:hidden"
       >
-        <Menu className="h-6 w-6 text-slate-300 hover:text-white" />
+        <Menu className="h-6 w-6" aria-hidden />
       </button>
 
-      <Transition appear show={navShow} as={Fragment} unmount={false}>
-        <Dialog as="div" onClose={onToggleNav} unmount={false}>
+      <Transition appear show={navShow} as={Fragment}>
+        <Dialog as="div" className="relative z-50 lg:hidden" onClose={closeNav}>
           <Transition.Child
             as={Fragment}
-            enter="ease-out duration-300"
+            enter="ease-out duration-200"
             enterFrom="opacity-0"
             enterTo="opacity-100"
-            leave="ease-in duration-200"
+            leave="ease-in duration-150"
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
-            unmount={false}
           >
-            <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" />
+            <div className="fixed inset-0 bg-black/60" aria-hidden />
           </Transition.Child>
 
           <Transition.Child
             as={Fragment}
-            enter="transition ease-in-out duration-300 transform"
-            enterFrom="translate-x-full opacity-0"
-            enterTo="translate-x-0 opacity-100"
-            leave="transition ease-in duration-200 transform"
-            leaveFrom="translate-x-0 opacity-100"
-            leaveTo="translate-x-full opacity-0"
-            unmount={false}
+            enter="ease-out duration-250 transform"
+            enterFrom="translate-x-full"
+            enterTo="translate-x-0"
+            leave="ease-in duration-200 transform"
+            leaveFrom="translate-x-0"
+            leaveTo="translate-x-full"
           >
-            <Dialog.Panel className="fixed right-0 top-0 z-50 h-full w-80 border-l border-slate-800/50 bg-slate-950/95 shadow-2xl backdrop-blur-xl">
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-slate-800/50 p-6">
+            <Dialog.Panel className="fixed inset-y-0 right-0 flex w-full max-w-[min(100vw,20rem)] flex-col border-l border-slate-800/50 bg-slate-950 shadow-2xl">
+              <div className="flex min-h-14 items-center justify-between border-b border-slate-800/50 px-4">
                 <div className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-blue-400" />
-                  <span className="text-lg font-bold text-white">Navigation</span>
+                  <Zap className="h-5 w-5 text-primary-400" aria-hidden />
+                  <Dialog.Title className="text-base font-bold text-white">Menu</Dialog.Title>
                 </div>
                 <button
-                  onClick={onToggleNav}
-                  className="rounded-lg p-2 transition-colors duration-300 hover:bg-slate-800/50"
-                  aria-label="Close Menu"
+                  type="button"
+                  onClick={closeNav}
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-slate-300 hover:bg-slate-800/50 hover:text-white"
+                  aria-label="Close menu"
                 >
-                  <X className="h-5 w-5 text-slate-300 hover:text-white" />
+                  <X className="h-5 w-5" aria-hidden />
                 </button>
               </div>
 
-              {/* Navigation */}
-              <nav ref={navRef} className="flex-1 p-6">
-                <div className="space-y-2">
+              <nav ref={navRef} className="flex-1 overflow-y-auto p-4">
+                <ul className="space-y-1">
                   {headerNavLinks.map((link) => (
-                    <LinkNext
-                      key={link.title}
-                      href={link.href}
-                      onClick={onToggleNav}
-                      className="flex items-center gap-3 rounded-xl px-4 py-3 text-lg font-medium text-slate-300 transition-all duration-300 hover:bg-slate-800/50 hover:text-white"
-                    >
-                      {t(link.title)}
-                    </LinkNext>
+                    <li key={link.title}>
+                      <LinkNext
+                        href={link.href}
+                        onClick={closeNav}
+                        className="flex min-h-12 items-center rounded-xl px-4 text-base font-medium text-slate-300 transition hover:bg-slate-800/50 hover:text-white"
+                      >
+                        {t(link.title)}
+                      </LinkNext>
+                    </li>
                   ))}
-
-                  {/* Tools Section */}
-                  <div className="my-2">
-                    <button
-                      onClick={onToolsToggle}
-                      className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-lg font-medium text-slate-300 transition-all duration-300 hover:bg-slate-800/50 hover:text-white"
-                    >
-                      <span>{t("header_nav_tools")}</span>
-                      <ChevronDown
-                        className={`h-5 w-5 transition-transform duration-300 ${
-                          toolsExpanded ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-
-                    {/* Tools Categorized for Mobile */}
-                    <Transition
-                      show={toolsExpanded}
-                      enter="transition-all duration-300 ease-out"
-                      enterFrom="opacity-0 max-h-0"
-                      enterTo="opacity-100 max-h-[80vh]"
-                      leave="transition-all duration-200 ease-in"
-                      leaveFrom="opacity-100 max-h-[80vh]"
-                      leaveTo="opacity-0 max-h-0"
-                    >
-                      <div className="custom-scrollbar ml-4 mt-2 space-y-4 overflow-hidden overflow-y-auto border-l-2 border-slate-800/50 pl-4">
-                        {Object.entries(
-                          toolsData.reduce(
-                            (acc, tool) => {
-                              let category = tool.category
-                              if (category === "Development") {
-                                category =
-                                  tool.title.includes("Converter") || tool.title.includes("to")
-                                    ? "Converters"
-                                    : "Dev Tools"
-                              } else if (
-                                ["Education", "Entertainment", "Finance"].includes(category)
-                              ) {
-                                category = "Others"
-                              } else if (["Productivity", "Communication"].includes(category)) {
-                                category = "Productivity"
-                              }
-                              if (!acc[category]) acc[category] = []
-                              acc[category].push(tool)
-                              return acc
-                            },
-                            {} as Record<string, typeof toolsData>
-                          )
-                        ).map(([category, tools]) => (
-                          <div key={category} className="space-y-2">
-                            <h4 className="text-[10px] font-bold uppercase tracking-widest text-blue-400/80">
-                              {category}
-                            </h4>
-                            <div className="space-y-1">
-                              {tools.map((tool) => {
-                                return (
-                                  <Link
-                                    key={tool.id}
-                                    href={tool.href}
-                                    onClick={onToggleNav}
-                                    className="group flex items-center gap-2 rounded-lg py-1.5 text-sm text-slate-400 transition-all duration-300 hover:text-white"
-                                  >
-                                    <span className="text-slate-600 transition-colors group-hover:text-blue-400">
-                                      to
-                                    </span>
-                                    <span className="truncate group-hover:text-blue-300">
-                                      {tool.title
-                                        .split(" - ")[0]
-                                        .replace(
-                                          / Converter| Generator| Tracker| Calculator| Decoder & Lookup| Test/g,
-                                          ""
-                                        )}
-                                    </span>
-                                    {tool.badge && (
-                                      <span
-                                        className={`rounded px-1.5 py-0.5 text-[8px] font-medium text-white ${tool.badgeColor} ml-auto flex-shrink-0`}
-                                      >
-                                        {tool.badge}
-                                      </span>
-                                    )}
-                                  </Link>
-                                )
-                              })}
-                            </div>
-                          </div>
-                        ))}
-
-                        {/* View All Tools */}
-                        <Link
-                          href="/tools"
-                          onClick={onToggleNav}
-                          className="mt-4 flex items-center gap-2 rounded-xl bg-slate-800/50 px-4 py-3 text-sm font-medium text-blue-400 transition-all duration-300 hover:bg-blue-500/20 hover:text-white"
-                        >
-                          <Zap className="h-4 w-4" />
-                          {t("footer_view_all_tools")}
-                        </Link>
-                      </div>
-                    </Transition>
-                  </div>
-
-                  {/* Language Select */}
+                </ul>
+                <div className="mt-4 border-t border-slate-800/50 pt-4">
                   <LanguageSelect />
                 </div>
               </nav>

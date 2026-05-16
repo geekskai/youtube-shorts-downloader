@@ -4,7 +4,7 @@ import Link from "@/components/Link"
 export const metadata = genPageMetadata({
   title: "Privacy Policy",
   description:
-    "How DecimalTools collects, uses, and protects information when you use our free online tools at decimaltools.com.",
+    "How YoutubeShortDownloader collects, uses, and protects information when you use our free online tools at youtubeshortdownloader.com.",
 })
 
 const PrivacyPolicy = () => {
@@ -56,7 +56,8 @@ const PrivacyPolicy = () => {
               <p>
                 <strong>Company</strong> (referred to as either &quot;the Company&quot;,
                 &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to{" "}
-                <strong>DecimalTools</strong>, the service operated at decimaltools.com.
+                <strong>YoutubeShortDownloader</strong>, the service operated at
+                youtubeshortdownloader.com.
               </p>
             </li>
             <li>
@@ -106,15 +107,15 @@ const PrivacyPolicy = () => {
             </li>
             <li>
               <p>
-                <strong>Website</strong> refers to DecimalTools, accessible from{" "}
+                <strong>Website</strong> refers to YoutubeShortDownloader, accessible from{" "}
                 <Link
-                  href="https://decimaltools.com/"
+                  href="https://youtubeshortdownloader.com/"
                   rel="external nofollow noopener"
                   target="_blank"
                   className="text-primary-500 hover:text-primary-400"
-                  aria-label="decimaltools website link"
+                  aria-label="youtubeshortdownloader website link"
                 >
-                  https://decimaltools.com/
+                  https://youtubeshortdownloader.com/
                 </Link>
               </p>
             </li>
@@ -216,7 +217,7 @@ const PrivacyPolicy = () => {
             If you have any questions about this Privacy Policy, You can contact us:
           </p>
           <ul className="list-disc space-y-2 pl-6 text-gray-700">
-            <li>By email: postmaster@decimaltools.com</li>
+            <li>By email: postmaster@youtubeshortdownloader.com</li>
             <li>Alternatively: geeks.kai@gmail.com</li>
           </ul>
         </div>

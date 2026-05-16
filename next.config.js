@@ -21,6 +21,9 @@ module.exports = () => {
           destination: "/:path*/feed.xml",
           permanent: true,
         },
+        { source: "/tools", destination: "/", permanent: true },
+        { source: "/tools/", destination: "/", permanent: true },
+        { source: "/tools/:path*", destination: "/", permanent: true },
       ]
     },
     output,
@@ -42,6 +45,8 @@ module.exports = () => {
           protocol: "https",
           hostname: "api.producthunt.com",
         },
+        { protocol: "https", hostname: "i.ytimg.com" },
+        { protocol: "https", hostname: "img.youtube.com" },
       ],
       // 启用图片优化以减少 Fast Origin Transfer 费用
       // 仅在明确需要时才禁用优化（如静态导出）

@@ -3,12 +3,12 @@ import React from "react"
 import Link from "@/components/Link"
 
 export const metadata = genPageMetadata({
-  title: "DecimalTools Terms of Service | 100% Free Online Tools",
+  title: "YoutubeShortDownloader Terms of Service | 100% Free Online Tools",
   description:
-    "Read the DecimalTools Terms of Service. Discover our commitment to providing 100% free online tools, downloaders, and converters with no hidden fees or paywalls.",
+    "Read the YoutubeShortDownloader Terms of Service. Discover our commitment to providing 100% free online tools, downloaders, and converters with no hidden fees or paywalls.",
 })
 
-const SITE_URL = "https://decimaltools.com"
+const SITE_URL = "https://youtubeshortdownloader.com"
 const LAST_UPDATED = "April 12, 2026"
 
 export default function TermsOfServicePage() {
@@ -18,7 +18,7 @@ export default function TermsOfServicePage() {
         <div className="px-6 py-8 sm:px-8">
           <header className="mb-10 text-center">
             <h1 className="mb-4 text-3xl font-extrabold text-gray-900 sm:text-4xl">
-              DecimalTools Terms of Service
+              YoutubeShortDownloader Terms of Service
             </h1>
             <p className="text-sm uppercase tracking-wide text-gray-500">
               <strong className="font-semibold text-gray-700">Last updated:</strong> {LAST_UPDATED}
@@ -30,20 +30,20 @@ export default function TermsOfServicePage() {
               Our Core Promise: 100% Free Service
             </h2>
             <p className="mb-4 leading-relaxed text-gray-700">
-              Welcome to DecimalTools! We are proud to offer a{" "}
+              Welcome to YoutubeShortDownloader! We are proud to offer a{" "}
               <strong>completely free platform</strong>. There are{" "}
               <strong>no subscriptions, no hidden fees, and no paywalls</strong> to use any of our
               online tools, downloaders, or converters. These Terms and Conditions outline the
-              rules, regulations, and acceptable use policy for accessing DecimalTools.
+              rules, regulations, and acceptable use policy for accessing YoutubeShortDownloader.
             </p>
             <p className="text-sm text-gray-600">
               <strong>Support Contact:</strong>{" "}
               <Link
-                href="mailto:postmaster@decimaltools.com"
+                href="mailto:postmaster@youtubeshortdownloader.com"
                 className="font-medium text-primary-600 transition-colors hover:text-primary-500 hover:underline"
-                aria-label="Email DecimalTools Support"
+                aria-label="Email YoutubeShortDownloader Support"
               >
-                postmaster@decimaltools.com
+                postmaster@youtubeshortdownloader.com
               </Link>
             </p>
           </div>
@@ -59,8 +59,8 @@ export default function TermsOfServicePage() {
                 {SITE_URL}
               </Link>{" "}
               (the &quot;Service&quot;), you assume full acceptance of these terms and conditions.
-              Do not continue to use DecimalTools if you do not agree to abide by all the terms
-              stated on this page.
+              Do not continue to use YoutubeShortDownloader if you do not agree to abide by all the
+              terms stated on this page.
             </p>
           </div>
 
@@ -72,9 +72,9 @@ export default function TermsOfServicePage() {
               1. Description of Free Services
             </h2>
             <p className="mb-4 leading-relaxed text-gray-700">
-              DecimalTools is a platform providing <strong>free online web tools</strong>—such as
-              measurement converters, productivity utilities, and related helpers—with more tools
-              added over time. All accessible features and functionalities are provided to you
+              YoutubeShortDownloader is a platform providing <strong>free online web tools</strong>
+              —such as measurement converters, productivity utilities, and related helpers—with more
+              tools added over time. All accessible features and functionalities are provided to you
               entirely at <strong>no cost</strong>.
             </p>
             <p className="leading-relaxed text-gray-700">
@@ -92,10 +92,10 @@ export default function TermsOfServicePage() {
               2. User Eligibility & Acceptance
             </h2>
             <p className="leading-relaxed text-gray-700">
-              By utilizing DecimalTools's suite of free online tools, you confirm that you are at
-              least 13 years of age. Use of this Service is void where prohibited. You represent and
-              warrant that your access to our platform complies with all applicable local, state,
-              national, and international laws and regulations.
+              By utilizing YoutubeShortDownloader's suite of free online tools, you confirm that you
+              are at least 13 years of age. Use of this Service is void where prohibited. You
+              represent and warrant that your access to our platform complies with all applicable
+              local, state, national, and international laws and regulations.
             </p>
           </section>
 
@@ -134,8 +134,8 @@ export default function TermsOfServicePage() {
                 infrastructure.
               </li>
               <li>
-                Reverse engineering, decompiling, or otherwise tampering with DecimalTools’s
-                software.
+                Reverse engineering, decompiling, or otherwise tampering with
+                YoutubeShortDownloader’s software.
               </li>
               <li>
                 Bypassing security measures or fair-use quota systems implemented to ensure
@@ -152,10 +152,10 @@ export default function TermsOfServicePage() {
               4. Intellectual Property Rights
             </h2>
             <p className="leading-relaxed text-gray-700">
-              Unless otherwise stated, DecimalTools and/or its licensors own the intellectual
-              property rights for all original material on this website (including branding, UI/UX
-              design, text, logos, and custom code). You may access this for your own personal use
-              subject to the restrictions set in these terms and conditions.
+              Unless otherwise stated, YoutubeShortDownloader and/or its licensors own the
+              intellectual property rights for all original material on this website (including
+              branding, UI/UX design, text, logos, and custom code). You may access this for your
+              own personal use subject to the restrictions set in these terms and conditions.
             </p>
           </section>
 
@@ -167,9 +167,9 @@ export default function TermsOfServicePage() {
               5. Third-Party Websites & External Content
             </h2>
             <p className="mb-4 leading-relaxed text-gray-700">
-              Some DecimalTools tools interact with external platforms (such as social media
-              networks, video, or audio hosting platforms). DecimalTools acts merely as an automated
-              conduit and processing provider; we{" "}
+              Some YoutubeShortDownloader tools interact with external platforms (such as social
+              media networks, video, or audio hosting platforms). YoutubeShortDownloader acts merely
+              as an automated conduit and processing provider; we{" "}
               <strong>do not host, store, or cache any copyrighted user media</strong> on our
               servers.
             </p>
@@ -187,7 +187,7 @@ export default function TermsOfServicePage() {
               6. 100% Free Service Guarantee
             </h2>
             <p className="mb-4 leading-relaxed text-gray-700">
-              We stand by our commitment that all core features on DecimalTools are{" "}
+              We stand by our commitment that all core features on YoutubeShortDownloader are{" "}
               <strong>free forever</strong>. We guarantee the following:
             </p>
             <ul className="mb-6 list-disc space-y-3 pl-6 text-gray-700">
@@ -205,8 +205,8 @@ export default function TermsOfServicePage() {
               </li>
             </ul>
             <p className="rounded-md border border-gray-100 bg-gray-50 p-4 text-sm text-gray-600">
-              * Note: While DecimalTools is entirely free to use, standard data and internet
-              browsing charges from your personal network provider still apply.
+              * Note: While YoutubeShortDownloader is entirely free to use, standard data and
+              internet browsing charges from your personal network provider still apply.
             </p>
           </section>
 
@@ -235,8 +235,8 @@ export default function TermsOfServicePage() {
             </h2>
             <p className="mb-4 leading-relaxed text-gray-700">
               To the maximum extent permitted by applicable law, we exclude all representations,
-              warranties, and conditions relating to our website. DecimalTools is provided on an{" "}
-              <strong>&quot;AS IS&quot;</strong> and <strong>&quot;AS AVAILABLE&quot;</strong>{" "}
+              warranties, and conditions relating to our website. YoutubeShortDownloader is provided
+              on an <strong>&quot;AS IS&quot;</strong> and <strong>&quot;AS AVAILABLE&quot;</strong>{" "}
               basis.
             </p>
             <p className="leading-relaxed text-gray-700">
@@ -255,7 +255,7 @@ export default function TermsOfServicePage() {
             <p className="leading-relaxed text-gray-700">
               Because our website, tools, and services are provided completely free of charge, we
               will not be held liable for any loss or damage of any nature. In no event shall
-              DecimalTools or its operators be responsible for indirect, consequential, or
+              YoutubeShortDownloader or its operators be responsible for indirect, consequential, or
               incidental damages resulting from your use of, or inability to use, our platform.
             </p>
           </section>
@@ -268,19 +268,19 @@ export default function TermsOfServicePage() {
               10. DMCA & Copyright Infringement
             </h2>
             <p className="mb-4 leading-relaxed text-gray-700">
-              DecimalTools deeply respects the intellectual property rights of others. If you are a
-              copyright owner or an agent thereof, and believe that any functionality or user action
-              on DecimalTools infringes upon your legally protected copyrights, we urge you to
-              submit a formal infringement notice.
+              YoutubeShortDownloader deeply respects the intellectual property rights of others. If
+              you are a copyright owner or an agent thereof, and believe that any functionality or
+              user action on YoutubeShortDownloader infringes upon your legally protected
+              copyrights, we urge you to submit a formal infringement notice.
             </p>
             <p className="leading-relaxed text-gray-700">
               Please include proof of copyright ownership and specific URLs, and email us directly
               at
               <Link
-                href="mailto:postmaster@decimaltools.com"
+                href="mailto:postmaster@youtubeshortdownloader.com"
                 className="ml-1 font-medium text-primary-600 hover:text-primary-500"
               >
-                postmaster@decimaltools.com
+                postmaster@youtubeshortdownloader.com
               </Link>
               . We will promptly investigate and block any infringing capabilities upon validation.
             </p>
@@ -295,9 +295,9 @@ export default function TermsOfServicePage() {
             </h2>
             <p className="leading-relaxed text-gray-700">
               We maintain the right to revise or modify these Terms of Service at any given time to
-              reflect new features or legal requirements. By continuing to use DecimalTools
-              following the publication of any modifications, you implicitly agree to be legally
-              bound by the most recent updated terms.
+              reflect new features or legal requirements. By continuing to use
+              YoutubeShortDownloader following the publication of any modifications, you implicitly
+              agree to be legally bound by the most recent updated terms.
             </p>
           </section>
 

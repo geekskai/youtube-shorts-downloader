@@ -1,15 +1,16 @@
 {
   "HomePage": {
-    "home_seo_title": "Free Decimal Converter & Calculator | DecimalTools",
-    "home_seo_description": "Free online decimal converter. Convert fractions to decimals, inches to decimal, decimals to hours and more — instantly. No sign-up. Works on mobile & desktop.",
-    "home_seo_keywords": "decimal converter, fraction to decimal, inches to decimal, decimal calculator, free decimal tools, fraction calculator, decimal conversion online",
+    "home_seo_title": "Free YouTube Shorts Downloader — Save MP4 Online | YoutubeShortDownloader",
+    "home_seo_description": "Paste a YouTube Shorts link and download MP4 in seconds. No account or app—works in Safari, Chrome, and on iPhone and Android. Always free.",
+    "home_seo_keywords": "youtube shorts downloader, download youtube shorts, youtube shorts to mp4, save youtube shorts, shorts video downloader, youtube shorts saver",
     "header_nav_home": "Home",
+    "header_nav_download": "Download",
     "header_nav_blog": "Blog",
-    "header_nav_tools": "Tools",
+    "header_nav_tools": "Download",
     "footer_resources": "Resources",
-    "footer_popular_tools": "Popular Tools",
+    "footer_popular_tools": "Key Features",
     "footer_100_free_forever": "100% Free Forever",
-    "footer_view_all_tools": "View All Tools",
+    "footer_view_all_tools": "Open Downloader",
     "footer_blog": "Blog",
     "footer_tags": "Tags",
     "footer_projects": "Projects",
@@ -17,12 +18,12 @@
     "footer_terms_of_service": "Terms of Service",
     "footer_connect_with_us": "Connect With Us",
     "footer_built_with_love": "Built with Love",
-    "footer_built_with_love_description": "Built by developers who hate slow, bloated calculators. Simple, fast, and always free decimal conversion tools.",
-    "footer_description": "Free decimal conversion tools for fractions, inches, hours, and more. Built for professionals and everyday users. No sign-up required. Always free.",
+    "footer_built_with_love_description": "Made for creators who clip, edit, and archive Shorts—paste a link, pick quality, download. No paywall.",
+    "footer_description": "Save YouTube Shorts as MP4 in your browser—no install. Built for creators, editors, and viewers who need fast, reliable downloads.",
     "footer_status_all_systems_operational": "Status: All systems operational",
     "footer_all_rights_reserved": "All rights reserved",
     "hero_hello": "Hello,",
-    "hero_h1_0": "<rich>Free Decimal Converter</rich> & <rich1>Calculator Tools</rich1>",
+    "hero_h1_0": "<rich>Free YouTube Shorts</rich> <rich1>Downloader</rich1>",
     "hero_contact_me": "Contact me",
     "blog_all_posts": "All Posts",
     "hero_get_resume": "Get Resume",
@@ -32,14 +33,65 @@
     "hero_github_contributions": "My Github Contributions",
     "hero_experiences": "Experiences",
     "hero_skills": "Skills",
+    "hero_badge": "Free · No sign-up",
+    "hero_title": "Download YouTube Shorts as MP4",
+    "quick_answer_label": "Quick Answer:",
+    "quick_answer_text": "YoutubeShortDownloader lets you paste any YouTube Shorts link and save the video as an MP4 file in your browser — free, fast, and no account required.",
+    "quick_answer_best_for_label": "Best for:",
+    "quick_answer_best_for": "creators, editors, marketers, and viewers who need offline Shorts for reference or editing.",
+    "quick_answer_cost_label": "Cost:",
+    "quick_answer_cost": "100% free — no subscription or install.",
+    "quick_answer_benefit_label": "Key benefit:",
+    "quick_answer_benefit": "Mobile-first paste-and-download flow with multiple MP4 quality options.",
+    "content_updated": "Last updated",
+    "core_facts_title": "Core Facts",
+    "core_facts_intro": "Key facts about YoutubeShortDownloader at a glance.",
+    "fact_instant_label": "Instant",
+    "fact_instant_detail": "Paste a link and get MP4 in seconds.",
+    "fact_free_label": "Free",
+    "fact_free_detail": "No sign-up, subscription, or install.",
+    "fact_format_label": "MP4",
+    "fact_format_detail": "Standard MP4 for edit and offline viewing.",
+    "fact_device_label": "Any device",
+    "fact_device_detail": "Works on phone, tablet, and desktop browsers.",
+    "how_to_title": "How do you download YouTube Shorts?",
+    "how_to_answer": "Paste the Shorts URL, fetch the video, then download MP4 — three steps in the tool above.",
+    "howto_step_1_title": "Copy the Shorts link",
+    "howto_step_1_body": "Open the Short in the YouTube app or browser and copy the share URL (shorts, youtu.be, or watch links all work).",
+    "howto_step_2_title": "Paste and click Get Video",
+    "howto_step_2_body": "Paste the URL into the box above and tap Get Video. YoutubeShortDownloader loads title, thumbnail, and available qualities.",
+    "howto_step_3_title": "Choose quality and download MP4",
+    "howto_step_3_body": "Pick your preferred resolution, then click Download MP4. The file saves directly to your device.",
+    "how_to_takeaway_label": "Quick takeaway:",
+    "how_to_takeaway": "No account needed — paste, fetch, download.",
+    "faq_title": "Common questions",
+    "faq_intro": "Direct answers to the most searched questions about downloading YouTube Shorts.",
     "hero_blogs_list": "Latest Articles",
     "projects_title": "Projects",
     "projects_description": "Here are some of the projects I have worked on."
   },
+  "ShortsDownloader": {
+    "input_label": "YouTube Shorts URL",
+    "input_placeholder": "Paste YouTube Shorts link (e.g. youtube.com/shorts/...)",
+    "button_fetch": "Get Video",
+    "button_paste": "Paste",
+    "button_download": "Download MP4",
+    "loading": "Fetching video info...",
+    "downloading": "Starting download…",
+    "ready": "Ready to download",
+    "quality_label": "Video quality",
+    "download_note": "Large files may take a moment to prepare before download starts.",
+    "step_1": "Copy Shorts link from YouTube",
+    "step_2": "Paste URL and tap Get Video",
+    "step_3": "Choose quality and download MP4",
+    "hint": "Supports youtube.com/shorts/, youtu.be/, and watch?v= links.",
+    "error_invalid_url": "Please enter a valid YouTube Shorts or video URL.",
+    "error_fetch_failed": "Could not fetch this video. Check the URL and try again."
+  },
   "ToolsPage": {
-    "tools_seo_title": "Free Tools that supercharge your workflow",
-    "tools_seo_description": "Discover powerful, free online tools crafted for developers, creators, and innovators.",
-    "tools_seo_keywords": "Tools that your workflow",
+    "tools_seo_title": "YouTube Shorts Downloader — MP4 Quality Picker | YoutubeShortDownloader",
+    "tools_seo_description": "Use the browser-based Shorts downloader: paste a URL, preview the video, choose MP4 resolution, and save to your device—free for creators and editors.",
+    "tools_seo_keywords": "youtube shorts downloader tool, mp4 shorts download, shorts quality selector, browser shorts downloader, paste shorts link download",
     "tools_free_tools": "Free Tools",
     "tools_always_updated": "Always Updated",
     "tools_tools_that": "Tools that",
@@ -353,7 +405,7 @@
     }
   },
   "DecimalToText": {
-    "seo_title": "Decimal to Text Converter - Convert Decimal Codes to Plain Text | DecimalTools",
+    "seo_title": "Decimal to Text Converter - Convert Decimal Codes to Plain Text | YoutubeShortDownloader",
     "seo_description": "Convert decimal character codes into text instantly. Paste values like 72 101 108 108 111 and get Hello in one click.",
     "seo_keywords": "decimal to text, decimal ascii to text, decimal code converter, decimal numbers to string, decimal character code to text, decimal decoder",
     "breadcrumb": {
@@ -492,7 +544,7 @@
     }
   },
   "DecimalToChar": {
-    "seo_title": "Decimal to ASCII Converter - Decimal Code to Character Tool | DecimalTools",
+    "seo_title": "Decimal to ASCII Converter - Decimal Code to Character Tool | YoutubeShortDownloader",
     "seo_description": "Convert decimal ASCII codes to characters instantly. Decode decimal, binary, and hex ASCII values, or encode plain ASCII text back into numeric codes.",
     "seo_keywords": "decimal to ascii, decimal to char, ascii decimal converter, decimal ascii decoder, ascii code to text, decimal character converter",
     "breadcrumb": {
@@ -626,7 +678,7 @@
     }
   },
   "GaugeToDecimal": {
-    "seo_title": "Gauge to Decimal Converter - Sheet Metal & AWG Size to Inches/mm | DecimalTools",
+    "seo_title": "Gauge to Decimal Converter - Sheet Metal & AWG Size to Inches/mm | YoutubeShortDownloader",
     "seo_description": "Convert gauge to decimal inches and millimeters instantly. Compare sheet steel, galvanized, stainless, aluminum, and AWG wire standards with tolerance guidance.",
     "seo_keywords": "gauge to decimal, gauge thickness chart, sheet metal gauge to mm, awg to decimal inches, gauge converter, metal thickness converter",
     "breadcrumb": {
@@ -775,7 +827,7 @@
     }
   },
   "DecimalToMillimeter": {
-    "seo_title": "Decimal to Millimeter Converter - Inch to mm and mm to Inch | DecimalTools",
+    "seo_title": "Decimal to Millimeter Converter - Inch to mm and mm to Inch | YoutubeShortDownloader",
     "seo_description": "Convert decimal inches to millimeters instantly with exact 25.4 factor. Also supports mm to inch conversion, fraction input, precision control, and one-tap copy.",
     "seo_keywords": "decimal to millimeter, inch to mm converter, mm to inch converter, decimal inch conversion, 25.4 conversion, machinist unit converter",
     "breadcrumb": {
@@ -912,7 +964,7 @@
     }
   },
   "MillimetersToDecimal": {
-    "seo_title": "Millimeters to Decimal Converter - mm to Inches + Fraction | DecimalTools",
+    "seo_title": "Millimeters to Decimal Converter - mm to Inches + Fraction | YoutubeShortDownloader",
     "seo_description": "Convert millimeters to decimal inches with exact 1/25.4 precision. Get nearest common fraction, precision offset, rounding controls, and copy-ready formats.",
     "seo_keywords": "millimeters to decimal, mm to inches converter, metric to imperial converter, nearest inch fraction, machinist unit converter, gauge dimension conversion",
     "breadcrumb": {
@@ -1021,7 +1073,7 @@
     }
   },
   "DecimalToInchesCalculator": {
-    "seo_title": "Decimal to Inches Calculator - Decimal to Fraction Inch Converter | DecimalTools",
+    "seo_title": "Decimal to Inches Calculator - Decimal to Fraction Inch Converter | YoutubeShortDownloader",
     "seo_description": "Convert decimal inches into exact and nearest fractions with 1/4 to 1/64 precision, rounding direction controls, feet-inch formatting, and digital ruler mapping.",
     "seo_keywords": "decimal to inches calculator, decimal to fraction inches, inch fraction converter, woodworking decimal to fraction, machinist inch converter, tape measure fraction calculator",
     "breadcrumb": {
@@ -1131,7 +1183,7 @@
     }
   },
   "HexaToDecimal": {
-    "seo_title": "Hexa to Decimal Converter - Signed, Unsigned, BigInt Debug Tool | DecimalTools",
+    "seo_title": "Hexa to Decimal Converter - Signed, Unsigned, BigInt Debug Tool | YoutubeShortDownloader",
     "seo_description": "Convert hexadecimal to decimal instantly with signed/unsigned logic, 8/16/32/64-bit two's complement, endian toggle, binary/octal/ASCII previews, and bit-flip visualization.",
     "seo_keywords": "hexa to decimal, hex to decimal converter, signed hex converter, two's complement calculator, bigint hex conversion, endian hex parser",
     "breadcrumb": {
@@ -1240,7 +1292,7 @@
     }
   },
   "InchesToDecimals": {
-    "seo_title": "Inches to Decimals Converter - Fraction and Mixed Inch Calculator | DecimalTools",
+    "seo_title": "Inches to Decimals Converter - Fraction and Mixed Inch Calculator | YoutubeShortDownloader",
     "seo_description": "Convert fractional inches like 5/8 or 1 3/4 into decimal inches instantly. Includes mixed-number parser, quick fraction grid, auto-copy mode, and mm preview.",
     "seo_keywords": "inches to decimals, fraction to decimal inches, mixed inches converter, 5/8 to decimal, woodworking inch decimal calculator",
     "breadcrumb": {
@@ -1346,7 +1398,7 @@
     }
   },
   "HoursToDecimalCalculator": {
-    "seo_title": "Hours to Decimal Calculator - Payroll Time Converter | DecimalTools",
+    "seo_title": "Hours to Decimal Calculator - Payroll Time Converter | YoutubeShortDownloader",
     "seo_description": "Convert HH:MM, HH:MM:SS, 1h 30m, or 90 min to decimal hours instantly. Includes quarter-hour, tenth-hour, and 7-minute payroll rounding with wage totals and batch export.",
     "seo_keywords": "hours to decimal calculator, payroll hours converter, time to decimal, 7 minute rule calculator, quarter hour rounding, billable hours converter",
     "breadcrumb": {
@@ -1472,7 +1524,7 @@
     }
   },
   "TimeToDecimalConverter": {
-    "seo_title": "Time to Decimal Converter - Hours, Minutes, Days | DecimalTools",
+    "seo_title": "Time to Decimal Converter - Hours, Minutes, Days | YoutubeShortDownloader",
     "seo_description": "Convert HH:MM:SS, 1h 30m, 2 days 6 hours, or 2:30 PM into decimal hours, minutes, or days instantly. Includes precision control, interpretation breadcrumbs, and reverse conversion.",
     "seo_keywords": "time to decimal converter, hh:mm to decimal, decimal hours calculator, decimal minutes converter, decimal days calculator, clock time to decimal",
     "breadcrumb": {
@@ -1594,7 +1646,7 @@
     }
   },
   "FractionToDecimal": {
-    "seo_title": "Fraction to Decimal Converter — Free Math Calculator | DecimalTools",
+    "seo_title": "Fraction to Decimal Converter — Free Math Calculator | YoutubeShortDownloader",
     "seo_description": "Convert fractions and mixed numbers to decimals (and decimals to fractions) instantly. Clear answers for homework: e.g. 3/8 = 0.375, 1 1/2 = 1.5. Free, no sign-up.",
     "seo_keywords": "fraction to decimal, mixed number to decimal, convert fraction to decimal, decimal to fraction calculator, free fraction calculator, math homework, 3/8 as a decimal",
     "breadcrumb": {
@@ -1621,7 +1673,7 @@
     "related_inches_hint": "Need fractional inches for construction?",
     "related_inches_link": "Use the inches to decimal converter",
     "hub": {
-      "seo_title": "Fraction as a Decimal Pages | Popular Fractions and Mixed Numbers | DecimalTools",
+      "seo_title": "Fraction as a Decimal Pages | Popular Fractions and Mixed Numbers | YoutubeShortDownloader",
       "seo_description": "Browse high-intent fraction as a decimal pages for common searches like 1/2, 2/3, 3/8, 5/6, and mixed numbers such as 1 1/2 or 3 3/4.",
       "seo_keywords": "fraction as a decimal, what is 3/8 as a decimal, 5/6 to decimal, 2/3 decimal, mixed number to decimal, fraction decimal pages",
       "title": "Popular Fraction as a Decimal Pages",
@@ -1697,7 +1749,7 @@
       "browse_all": "Browse all as-a-decimal pages"
     },
     "pseo": {
-      "seo_title": "What is {numerator}/{denominator} as a decimal? | DecimalTools",
+      "seo_title": "What is {numerator}/{denominator} as a decimal? | YoutubeShortDownloader",
       "seo_description": "{numerator}/{denominator} as a decimal is {decimal}. Instant conversion — also try our full fraction calculator.",
       "h1": "{numerator}/{denominator} as a decimal",
       "direct_answer_line": "{numerator}/{denominator} = {decimal}",

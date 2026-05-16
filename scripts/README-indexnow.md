@@ -67,7 +67,7 @@ public/
 ### 3. 确保网站线上运行正常
 
 Next.js (`app/sitemap.ts`) 会在用户访问时动态生成 `sitemap.xml`。
-本脚本**默认直接请求线上的** `https://decimaltools.com/sitemap.xml` 获取最新数据（动态路由、工具页等实时生效），无需手动维护本地文件。
+本脚本**默认直接请求线上的** `https://youtubeshortdownloader.com/sitemap.xml` 获取最新数据（动态路由、工具页等实时生效），无需手动维护本地文件。
 
 ---
 
@@ -113,7 +113,7 @@ yarn indexnow
 
 ```bash
 # 使用远程 sitemap 提交，batch 500，关闭重试
-yarn indexnow --sitemap https://decimaltools.com/sitemap.xml --batch-size 500 --retry 0
+yarn indexnow --sitemap https://youtubeshortdownloader.com/sitemap.xml --batch-size 500 --retry 0
 
 # 预演 + 详细日志
 yarn indexnow --dry-run --verbose
