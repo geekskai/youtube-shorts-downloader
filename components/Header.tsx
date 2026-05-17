@@ -5,8 +5,8 @@ import Link from "./Link"
 import MobileNav from "./MobileNav"
 import SearchButton from "./SearchButton"
 import Image from "./Image"
-import { useTranslations } from "next-intl"
 import LinkNext from "next/link"
+import { useHeaderNavLabel } from "@/hooks/useHeaderNavLabel"
 
 const Header = () => {
   return (
@@ -17,7 +17,7 @@ const Header = () => {
 }
 
 function HeaderRow() {
-  const t = useTranslations("HomePage")
+  const navLabel = useHeaderNavLabel()
   return (
     <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4 xl:px-0">
       <Link href="/" aria-label={siteMetadata.headerTitle} className="min-w-0 shrink">
@@ -48,7 +48,7 @@ function HeaderRow() {
             href={link.href}
             className="group relative min-h-11 px-3 py-2 text-sm font-medium text-slate-300 transition hover:text-white md:text-base"
           >
-            {t(link.title)}
+            {navLabel(link)}
             <span className="absolute inset-x-3 bottom-1.5 h-0.5 scale-x-0 rounded-full bg-gradient-to-r from-primary-500 to-primary-400 transition-transform duration-300 group-hover:scale-x-100" />
           </LinkNext>
         ))}

@@ -7,10 +7,10 @@ import headerNavLinks from "@/data/headerNavLinks"
 import { Menu, X, Zap } from "lucide-react"
 import LanguageSelect from "./LanguageSelect"
 import LinkNext from "next/link"
-import { useTranslations } from "next-intl"
+import { useHeaderNavLabel } from "@/hooks/useHeaderNavLabel"
 
 const MobileNav = () => {
-  const t = useTranslations("HomePage")
+  const navLabel = useHeaderNavLabel()
   const [navShow, setNavShow] = useState(false)
   const navRef = useRef<HTMLDivElement>(null)
 
@@ -94,7 +94,7 @@ const MobileNav = () => {
                         onClick={closeNav}
                         className="flex min-h-12 items-center rounded-xl px-4 text-base font-medium text-slate-300 transition hover:bg-slate-800/50 hover:text-white"
                       >
-                        {t(link.title)}
+                        {navLabel(link)}
                       </LinkNext>
                     </li>
                   ))}

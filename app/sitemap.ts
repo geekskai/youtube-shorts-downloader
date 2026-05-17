@@ -12,10 +12,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: post.lastmod || post.date,
     }))
 
-  const routes = ["", "blog", "terms", "privacy", "tags", "about"].map((route) => ({
+  const routes = [
+    "",
+    "youtube-video-downloader",
+    "youtube-audio-downloader",
+    "blog",
+    "terms",
+    "privacy",
+    "tags",
+    "about",
+  ].map(
+    (route) => ({
     url: `${siteUrl}/${route}`,
-    lastModified: new Date().toISOString().split("T")[0],
-  }))
+      lastModified: new Date().toISOString().split("T")[0],
+    })
+  )
 
   const allRoutes = [...routes, ...blogRoutes]
   return allRoutes.filter(

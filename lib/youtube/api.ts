@@ -108,12 +108,15 @@ const RES_ORDER: Record<string, number> = {
   "144p": 0,
 }
 
-function parseQualities(raw: RawQuality[] | undefined): QualityOption[] {
+function parseQualitiesByType(
+  raw: RawQuality[] | undefined,
+  mediaType: "video" | "audio"
+): QualityOption[] {
   if (!raw?.length) return []
 
   const map = new Map<string, QualityOption>()
   for (const q of raw) {
-    if (q.type !== "video" || q.id == null || q.id === 0) continue
+    if (q.type !== mediaType || q.id == null || q.id === 0) continue
     const id = String(q.id)
     const label = q.quality && q.quality !== "Unknown" ? q.quality : id
     const size = typeof q.size === "number" ? q.size : null
@@ -123,9 +126,21 @@ function parseQualities(raw: RawQuality[] | undefined): QualityOption[] {
     }
   }
 
-  return [...map.values()].sort(
-    (a, b) => (RES_ORDER[b.label] ?? -1) - (RES_ORDER[a.label] ?? -1)
-  )
+  if (mediaType === "video") {
+    return [...map.values()].sort(
+      (a, b) => (RES_ORDER[b.label] ?? -1) - (RES_ORDER[a.label] ?? -1)
+    )
+  }
+
+  return [...map.values()].sort((a, b) => (b.size ?? 0) - (a.size ?? 0))
+}
+
+function parseQualities(raw: RawQuality[] | undefined): QualityOption[] {
+  return parseQualitiesByType(raw, "video")
+}
+
+function parseAudioQualities(raw: RawQuality[] | undefined): QualityOption[] {
+  return parseQualitiesByType(raw, "audio")
 }
 
 function pickThumbnail(thumbs: RawThumbnail[] | undefined): string | null {
@@ -137,8 +152,16 @@ function defaultQualityId(qualities: QualityOption[]): string {
   return qualities.find((q) => q.label === "720p")?.id ?? qualities[0]?.id ?? ""
 }
 
+function defaultAudioQualityId(qualities: QualityOption[]): string {
+  if (!qualities.length) return ""
+  return [...qualities].sort((a, b) => (b.size ?? 0) - (a.size ?? 0))[0]?.id ?? ""
+}
+
 /** MCP: Get_Video_Details_and_Quality */
-export async function getVideoInfo(videoId: string): Promise<VideoInfo> {
+export async function getVideoInfo(
+  videoId: string,
+  defaultTitle = "YouTube Video"
+): Promise<VideoInfo> {
   const data = await rapidGet<RawVideoInfo>(
     `/get-video-info/${encodeURIComponent(videoId)}?return_available_quality=true`
   )
@@ -147,15 +170,34 @@ export async function getVideoInfo(videoId: string): Promise<VideoInfo> {
   const defaultId = defaultQualityId(qualities)
   const durationRaw = data.lengthSeconds
 
-  console.log("getVideoInfo", `${new Date().toISOString()} videoId: ${videoId}`)
-  console.log("getVideoInfo", `${new Date().toISOString()} qualities: ${JSON.stringify(qualities)}`)
-  console.log("getVideoInfo", `${new Date().toISOString()} defaultId: ${defaultId}`)
-  console.log("getVideoInfo", `${new Date().toISOString()} durationRaw: ${durationRaw}`)
-  console.log("getVideoInfo", `${new Date().toISOString()} data: ${JSON.stringify(data)}`)
+  return {
+    videoId,
+    title: data.title?.trim() || defaultTitle,
+    author: data.author ?? data.ownerChannelName ?? null,
+    thumbnail: pickThumbnail(data.thumbnail),
+    durationSeconds:
+      durationRaw != null && durationRaw !== "" ? Number(durationRaw) || null : null,
+    qualities,
+    defaultQualityId: defaultId,
+  }
+}
+
+/** MCP: Get_Video_Details_and_Quality (audio tracks only) */
+export async function getAudioInfo(
+  videoId: string,
+  defaultTitle = "YouTube Audio"
+): Promise<VideoInfo> {
+  const data = await rapidGet<RawVideoInfo>(
+    `/get-video-info/${encodeURIComponent(videoId)}?return_available_quality=true`
+  )
+
+  const qualities = parseAudioQualities(data.availableQuality)
+  const defaultId = defaultAudioQualityId(qualities)
+  const durationRaw = data.lengthSeconds
 
   return {
     videoId,
-    title: data.title?.trim() || "YouTube Short",
+    title: data.title?.trim() || defaultTitle,
     author: data.author ?? data.ownerChannelName ?? null,
     thumbnail: pickThumbnail(data.thumbnail),
     durationSeconds:
@@ -166,7 +208,7 @@ export async function getVideoInfo(videoId: string): Promise<VideoInfo> {
 }
 
 /** MCP: Get_Shorts_Download_URL */
-export async function getDownloadLink(
+export async function getShortsDownloadLink(
   videoId: string,
   qualityId: string
 ): Promise<DownloadLink> {
@@ -186,7 +228,52 @@ export async function getDownloadLink(
   }
 }
 
-/** Poll CDN until HEAD succeeds (Shorts files are sometimes prepared async). */
+/** @deprecated Use getShortsDownloadLink */
+export const getDownloadLink = getShortsDownloadLink
+
+/** MCP: Get_Video_Download_URL */
+export async function getVideoDownloadLink(
+  videoId: string,
+  qualityId: string
+): Promise<DownloadLink> {
+  const data = await rapidGet<RawDownload>(
+    `/download_video/${encodeURIComponent(videoId)}?quality=${encodeURIComponent(qualityId)}`
+  )
+
+  const url = data.file?.trim()
+  if (!url) {
+    throw new ShortsApiError("No download URL returned", "no_download_url")
+  }
+
+  return {
+    url,
+    fallbackUrl: data.reserved_file?.trim() || null,
+    mimeType: (data.mime ?? "video/mp4").replace(/\\\//g, "/"),
+  }
+}
+
+/** MCP: Get_Audio_Download_URL */
+export async function getAudioDownloadLink(
+  videoId: string,
+  qualityId: string
+): Promise<DownloadLink> {
+  const data = await rapidGet<RawDownload>(
+    `/download_audio/${encodeURIComponent(videoId)}?quality=${encodeURIComponent(qualityId)}`
+  )
+
+  const url = data.file?.trim()
+  if (!url) {
+    throw new ShortsApiError("No download URL returned", "no_download_url")
+  }
+
+  return {
+    url,
+    fallbackUrl: data.reserved_file?.trim() || null,
+    mimeType: (data.mime ?? "audio/mp4").replace(/\\\//g, "/"),
+  }
+}
+
+/** Poll CDN until HEAD succeeds (files are sometimes prepared async). */
 export async function resolveReadyUrl(link: DownloadLink, maxAttempts = 8): Promise<string> {
   const urls = [link.url, link.fallbackUrl].filter(Boolean) as string[]
 

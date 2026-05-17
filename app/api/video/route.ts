@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "invalid_url" }, { status: 400 })
     }
 
-    const video = await getVideoInfo(videoId, "YouTube Short")
+    const video = await getVideoInfo(videoId, "YouTube Video")
 
     if (!video.qualities.length || !video.defaultQualityId) {
       return NextResponse.json(
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     if (error instanceof ShortsApiError) {
-      console.error("[api/shorts]", error.code, error.message)
+      console.error("[api/video]", error.code, error.message)
       return NextResponse.json(
         { error: error.code, message: error.message },
         { status: error.code === "not_configured" ? 503 : 502 }
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "invalid_body" }, { status: 400 })
     }
     const message = error instanceof Error ? error.message : "unknown"
-    console.error("[api/shorts]", message)
+    console.error("[api/video]", message)
     return NextResponse.json({ error: "upstream", message }, { status: 502 })
   }
 }

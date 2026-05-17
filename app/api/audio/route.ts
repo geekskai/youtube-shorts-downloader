@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { getVideoInfo, isApiConfigured, ShortsApiError } from "@/lib/youtube/api"
+import { getAudioInfo, isApiConfigured, ShortsApiError } from "@/lib/youtube/api"
 import { parseYouTubeVideoId } from "@/lib/youtube/parse-url"
 
 export const runtime = "nodejs"
@@ -26,27 +26,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "invalid_url" }, { status: 400 })
     }
 
-    const video = await getVideoInfo(videoId, "YouTube Short")
+    const audio = await getAudioInfo(videoId, "YouTube Audio")
 
-    if (!video.qualities.length || !video.defaultQualityId) {
+    if (!audio.qualities.length || !audio.defaultQualityId) {
       return NextResponse.json(
-        { error: "no_qualities", message: "No downloadable qualities for this video" },
+        { error: "no_qualities", message: "No downloadable audio qualities for this video" },
         { status: 422 }
       )
     }
 
     return NextResponse.json({
-      videoId: video.videoId,
-      title: video.title,
-      thumbnail: video.thumbnail,
-      author: video.author,
-      durationSeconds: video.durationSeconds,
-      qualities: video.qualities,
-      defaultQualityId: video.defaultQualityId,
+      videoId: audio.videoId,
+      title: audio.title,
+      thumbnail: audio.thumbnail,
+      author: audio.author,
+      durationSeconds: audio.durationSeconds,
+      qualities: audio.qualities,
+      defaultQualityId: audio.defaultQualityId,
     })
   } catch (error) {
     if (error instanceof ShortsApiError) {
-      console.error("[api/shorts]", error.code, error.message)
+      console.error("[api/audio]", error.code, error.message)
       return NextResponse.json(
         { error: error.code, message: error.message },
         { status: error.code === "not_configured" ? 503 : 502 }
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "invalid_body" }, { status: 400 })
     }
     const message = error instanceof Error ? error.message : "unknown"
-    console.error("[api/shorts]", message)
+    console.error("[api/audio]", message)
     return NextResponse.json({ error: "upstream", message }, { status: 502 })
   }
 }

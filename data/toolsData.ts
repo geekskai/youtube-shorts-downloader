@@ -28,6 +28,42 @@ export const gradients = {
 
 export const toolsData: ToolData[] = [
   {
+    id: "youtube-audio-downloader",
+    title: "YouTube Audio Downloader",
+    description:
+      "Paste a YouTube link and download audio. Free, fast, and works on mobile and desktop browsers.",
+    icon: Download,
+    href: "/youtube-audio-downloader",
+    features: [
+      "Paste any public YouTube URL",
+      "Extract audio for offline listening",
+      "Multiple bitrate options",
+      "No account or subscription required",
+    ],
+    badge: "Audio",
+    badgeColor: "bg-emerald-500",
+    gradient: gradients.entertainment,
+    category: "Downloader",
+  },
+  {
+    id: "youtube-video-downloader",
+    title: "YouTube Video Downloader",
+    description:
+      "Paste a YouTube video link and download MP4. Free, fast, and works on mobile and desktop browsers.",
+    icon: Download,
+    href: "/youtube-video-downloader",
+    features: [
+      "Paste any public YouTube watch URL",
+      "Save full videos as MP4 for offline viewing",
+      "Multiple quality options up to 1080p",
+      "No account or subscription required",
+    ],
+    badge: "Video",
+    badgeColor: "bg-cyan-500",
+    gradient: gradients.utility,
+    category: "Downloader",
+  },
+  {
     id: "youtube-shorts-downloader",
     title: "YouTube Shorts Downloader",
     description:
