@@ -78,6 +78,29 @@ const TYPE = {
 const sectionHeaderCenter = "text-center md:text-left"
 const sectionHeaderStack = "text-center"
 
+type HeaderProps = {
+  id: string
+  title: string
+  intro?: string
+  alignClassName: string
+  introClassName?: string
+}
+
+function SectionHeader({ id, title, intro, alignClassName, introClassName = "" }: HeaderProps) {
+  return (
+    <>
+      <h2 id={id} className={`${alignClassName} ${TYPE.h2}`}>
+        {title}
+      </h2>
+      {intro ? (
+        <p className={`mt-2 md:mt-3 ${alignClassName} ${TYPE.sectionIntro} ${introClassName}`}>
+          {intro}
+        </p>
+      ) : null}
+    </>
+  )
+}
+
 export default function Home({ posts = [] }) {
   const t = useTranslations("HomePage")
   const pageNumber = 1
@@ -166,12 +189,13 @@ export default function Home({ posts = [] }) {
         className="border-b border-white/10 bg-slate-950"
       >
         <div className={`${SECTION} ${SECTION_PY}`}>
-          <h2 id="core-facts-title" className={`${sectionHeaderCenter} ${TYPE.h2}`}>
-            {t("core_facts_title")}
-          </h2>
-          <p className={`mt-2 md:mt-3 ${sectionHeaderCenter} ${TYPE.sectionIntro} lg:max-w-4xl`}>
-            {t("core_facts_intro")}
-          </p>
+          <SectionHeader
+            id="core-facts-title"
+            title={t("core_facts_title")}
+            intro={t("core_facts_intro")}
+            alignClassName={sectionHeaderCenter}
+            introClassName="lg:max-w-4xl"
+          />
           <div className="mt-5 grid grid-cols-1 gap-3 md:mt-7 md:grid-cols-2 md:gap-4 lg:mt-8 lg:grid-cols-4 lg:gap-5">
             {CORE_FACTS.map(({ icon: Icon, labelKey, detailKey, border, bg, labelColor }) => (
               <article
@@ -200,9 +224,11 @@ export default function Home({ posts = [] }) {
         className="border-b border-white/10 bg-slate-950"
       >
         <div className={`${SECTION} ${SECTION_PY}`}>
-          <h2 id="how-to-title" className={`${sectionHeaderStack} ${TYPE.h2}`}>
-            {t("how_to_title")}
-          </h2>
+          <SectionHeader
+            id="how-to-title"
+            title={t("how_to_title")}
+            alignClassName={sectionHeaderStack}
+          />
           <p
             className={`mx-auto mt-2 max-w-xl md:mt-3 md:max-w-2xl lg:max-w-4xl ${sectionHeaderStack} ${TYPE.sectionIntro}`}
           >
@@ -238,14 +264,13 @@ export default function Home({ posts = [] }) {
         className="border-b border-white/10 bg-slate-950"
       >
         <div className={`${SECTION} ${SECTION_PY}`}>
-          <h2 id="faq-title" className={`${sectionHeaderStack} ${TYPE.h2}`}>
-            {t("faq_title")}
-          </h2>
-          <p
-            className={`mx-auto mt-2 max-w-xl md:mt-3 md:max-w-2xl lg:max-w-4xl ${sectionHeaderStack} ${TYPE.sectionIntro}`}
-          >
-            {t("faq_intro")}
-          </p>
+          <SectionHeader
+            id="faq-title"
+            title={t("faq_title")}
+            intro={t("faq_intro")}
+            alignClassName={sectionHeaderStack}
+            introClassName="mx-auto max-w-xl md:max-w-2xl lg:max-w-4xl"
+          />
           <dl className="mx-auto mt-5 max-w-xl divide-y divide-white/10 rounded-2xl border border-white/10 bg-slate-900/45 md:mt-7 md:max-w-3xl lg:mt-8 lg:max-w-7xl">
             {HOME_FAQ_ITEMS.map((item) => (
               <div key={item.question} className="px-4 py-4 md:px-6 md:py-5 lg:px-8 lg:py-6">

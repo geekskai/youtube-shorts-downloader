@@ -12,8 +12,13 @@ import {
   ArrowRight,
 } from "lucide-react"
 import { useTranslations } from "next-intl"
-
-type QualityOption = { id: string; label: string; size: number | null }
+import {
+  fetchYouTubeMetadataClient,
+  getDownloaderErrorMessage,
+  mapDownloaderApiError,
+  type DownloaderApiErrorCode,
+} from "@/components/downloader/shared"
+import { parseYouTubeVideoId } from "@/lib/youtube/parse-url"
 
 type VideoPreview = {
   videoId: string
@@ -21,16 +26,9 @@ type VideoPreview = {
   thumbnail: string | null
   author: string | null
   durationSeconds: number | null
-  qualities: QualityOption[]
-  defaultQualityId: string
 }
 
-type ApiErrorCode =
-  | "invalid_url"
-  | "api_not_configured"
-  | "no_qualities"
-  | "upstream"
-  | "fetch_failed"
+type ApiErrorCode = DownloaderApiErrorCode
 
 function formatDuration(seconds: number | null): string | null {
   if (seconds == null || seconds <= 0) return null
@@ -43,22 +41,9 @@ function formatDuration(seconds: number | null): string | null {
   return `${m}:${s.toString().padStart(2, "0")}`
 }
 
-function formatFileSize(bytes: number | null): string | null {
-  if (bytes == null || bytes <= 0) return null
-  const mb = bytes / (1024 * 1024)
-  return mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`
-}
-
 function downloadHref(videoId: string, qualityId: string): string {
   const q = new URLSearchParams({ videoId, quality: qualityId })
   return `/api/video/download?${q}`
-}
-
-function mapApiError(code: string | undefined): ApiErrorCode {
-  if (code === "invalid_url" || code === "invalid_body") return "invalid_url"
-  if (code === "api_not_configured") return "api_not_configured"
-  if (code === "no_qualities") return "fetch_failed"
-  return "fetch_failed"
 }
 
 type VideoDownloaderProps = {
@@ -68,12 +53,12 @@ type VideoDownloaderProps = {
 
 const BTN =
   "inline-flex min-h-11 touch-manipulation items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-[background-color,border-color,opacity] duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/30 disabled:cursor-not-allowed disabled:opacity-45"
+const DEFAULT_VIDEO_QUALITY_ID = "247"
 
 type VideoResultCardProps = {
   video: VideoPreview
-  qualityId: string
   downloading: boolean
-  onQualityChange: (id: string) => void
+  downloadProgress: number
   onDownload: () => void
   t: ReturnType<typeof useTranslations<"VideoDownloader">>
   btnClass: string
@@ -81,16 +66,13 @@ type VideoResultCardProps = {
 
 function VideoResultCard({
   video,
-  qualityId,
   downloading,
-  onQualityChange,
+  downloadProgress,
   onDownload,
   t,
   btnClass,
 }: VideoResultCardProps) {
   const duration = formatDuration(video.durationSeconds)
-  const selected = video.qualities.find((q) => q.id === qualityId)
-  const selectedSize = formatFileSize(selected?.size ?? null)
 
   return (
     <article className="overflow-hidden rounded-2xl border border-primary-500/20 bg-gradient-to-br from-slate-950/90 via-slate-900/50 to-slate-950/90">
@@ -139,49 +121,35 @@ function VideoResultCard({
           </div>
         </div>
 
-        {/* Actions: stacked on mobile, row on lg */}
-        {video.qualities.length > 0 && (
-          <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4 sm:mt-5 sm:pt-5 lg:flex-row lg:items-end lg:gap-4">
-            <div className="min-w-0 flex-1">
-              <label
-                htmlFor="video-quality-select"
-                className="mb-1.5 flex items-center justify-between gap-2 text-xs font-medium text-slate-400"
-              >
-                <span>{t("quality_label")}</span>
-                {selectedSize && (
-                  <span className="tabular-nums text-slate-500">{selectedSize}</span>
-                )}
-              </label>
-              <select
-                id="video-quality-select"
-                value={qualityId}
-                onChange={(e) => onQualityChange(e.target.value)}
-                className="min-h-11 w-full touch-manipulation rounded-xl border border-white/15 bg-slate-950/80 px-3.5 py-2.5 text-base text-slate-100 focus:border-primary-400/60 focus:outline-none focus:ring-4 focus:ring-primary-500/20 sm:text-sm"
-              >
-                {video.qualities.map((q) => (
-                  <option key={q.id} value={q.id}>
-                    {q.label}
-                    {formatFileSize(q.size) ? ` · ${formatFileSize(q.size)}` : ""}
-                  </option>
-                ))}
-              </select>
+        <div className="mt-4 border-t border-white/10 pt-4 sm:mt-5 sm:pt-5">
+          <button
+            type="button"
+            onClick={onDownload}
+            disabled={downloading}
+            className={`${btnClass} w-full bg-gradient-to-r from-primary-600 to-primary-500 px-6 py-3.5 text-base text-white shadow-lg shadow-primary-900/25 hover:brightness-110`}
+          >
+            {downloading ? (
+              <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+            ) : (
+              <Download className="h-5 w-5" aria-hidden />
+            )}
+            <span>{downloading ? t("downloading") : t("button_download")}</span>
+          </button>
+          {downloading ? (
+            <div className="mt-3">
+              <div className="mb-1 flex items-center justify-between text-xs text-slate-400">
+                <span>Preparing file...</span>
+                <span>{downloadProgress}%</span>
+              </div>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800/80">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-primary-500 to-cyan-400 transition-[width] duration-500"
+                  style={{ width: `${downloadProgress}%` }}
+                />
+              </div>
             </div>
-
-            <button
-              type="button"
-              onClick={onDownload}
-              disabled={downloading || !qualityId}
-              className={`${btnClass} w-full shrink-0 bg-gradient-to-r from-primary-600 to-primary-500 px-6 py-3.5 text-base text-white shadow-lg shadow-primary-900/25 hover:brightness-110 lg:min-h-11 lg:w-auto lg:min-w-[11.5rem]`}
-            >
-              {downloading ? (
-                <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
-              ) : (
-                <Download className="h-5 w-5" aria-hidden />
-              )}
-              <span>{downloading ? t("downloading") : t("button_download")}</span>
-            </button>
-          </div>
-        )}
+          ) : null}
+        </div>
 
         <p className="mt-3 text-center text-[11px] leading-relaxed text-slate-500 sm:text-left">
           {t("download_note")}
@@ -200,9 +168,9 @@ export default function VideoDownloader({
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [downloadProgress, setDownloadProgress] = useState(0)
   const [errorKey, setErrorKey] = useState<ApiErrorCode | null>(null)
   const [video, setVideo] = useState<VideoPreview | null>(null)
-  const [qualityId, setQualityId] = useState("")
 
   useEffect(() => {
     if (!autoFocus) return
@@ -213,34 +181,26 @@ export default function VideoDownloader({
   const fetchVideo = useCallback(async () => {
     setErrorKey(null)
     setVideo(null)
+    setDownloadProgress(0)
     setLoading(true)
 
     try {
-      const res = await fetch("/api/video", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim() }),
-      })
-      const data = await res.json().catch(() => ({}))
-
-      if (!res.ok) {
-        setErrorKey(mapApiError(data.error))
+      const videoId = parseYouTubeVideoId(url.trim())
+      if (!videoId) {
+        setErrorKey("invalid_url")
         return
       }
 
-      const defaultQ = data.defaultQualityId ?? data.qualities?.[0]?.id ?? ""
-      setQualityId(defaultQ)
+      const metadata = await fetchYouTubeMetadataClient(videoId, "YouTube Video")
       setVideo({
-        videoId: data.videoId,
-        title: data.title,
-        thumbnail: data.thumbnail,
-        author: data.author,
-        durationSeconds: data.durationSeconds,
-        qualities: data.qualities ?? [],
-        defaultQualityId: defaultQ,
+        videoId: metadata.videoId,
+        title: metadata.title,
+        thumbnail: metadata.thumbnail,
+        author: metadata.author,
+        durationSeconds: metadata.durationSeconds,
       })
-    } catch {
-      setErrorKey("fetch_failed")
+    } catch (error) {
+      setErrorKey(mapDownloaderApiError(error instanceof Error ? error.message : undefined))
     } finally {
       setLoading(false)
     }
@@ -265,10 +225,18 @@ export default function VideoDownloader({
   }
 
   const handleDownload = () => {
-    if (!video || !qualityId) return
+    if (!video || downloading) return
     setDownloading(true)
-    window.location.assign(downloadHref(video.videoId, qualityId))
-    window.setTimeout(() => setDownloading(false), 3000)
+    setDownloadProgress(10)
+    const intervalId = window.setInterval(() => {
+      setDownloadProgress((current) => Math.min(current + 8, 90))
+    }, 350)
+    window.location.assign(downloadHref(video.videoId, DEFAULT_VIDEO_QUALITY_ID))
+    window.setTimeout(() => {
+      window.clearInterval(intervalId)
+      setDownloading(false)
+      setDownloadProgress(0)
+    }, 15000)
   }
 
   const isHero = variant === "hero"
@@ -276,14 +244,7 @@ export default function VideoDownloader({
     ? "w-full rounded-2xl border border-white/10 bg-slate-900/50 p-4 backdrop-blur-sm sm:p-6"
     : "mx-auto w-full max-w-2xl rounded-2xl border border-white/10 bg-slate-900/50 p-4 backdrop-blur-sm sm:p-8"
 
-  const errorMessage =
-    errorKey === "api_not_configured"
-      ? t("error_api_not_configured")
-      : errorKey === "invalid_url"
-        ? t("error_invalid_url")
-        : errorKey
-          ? t("error_fetch_failed")
-          : null
+  const errorMessage = getDownloaderErrorMessage(t, errorKey)
 
   const showStatus = Boolean(loading || video || errorMessage)
 
@@ -384,9 +345,8 @@ export default function VideoDownloader({
         {video ? (
           <VideoResultCard
             video={video}
-            qualityId={qualityId}
             downloading={downloading}
-            onQualityChange={setQualityId}
+            downloadProgress={downloadProgress}
             onDownload={handleDownload}
             t={t}
             btnClass={BTN}

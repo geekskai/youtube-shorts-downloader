@@ -1,26 +1,16 @@
 /**
- * youtube-video-fast-downloader-24-7 (RapidAPI)
- * Same endpoints as MCP: Get_Video_Details_and_Quality, Get_Shorts_Download_URL
+ * RapidAPI download endpoints with key rotation/fallback.
  */
-
 const HOST =
   process.env.RAPIDAPI_YOUTUBE_HOST ?? "youtube-video-fast-downloader-24-7.p.rapidapi.com"
-
-export type QualityOption = {
-  id: string
-  label: string
-  size: number | null
-}
-
-export type VideoInfo = {
-  videoId: string
-  title: string
-  author: string | null
-  thumbnail: string | null
-  durationSeconds: number | null
-  qualities: QualityOption[]
-  defaultQualityId: string
-}
+const RAPIDAPI_QUOTA_COOLDOWN_MS =
+  Number(process.env.RAPIDAPI_QUOTA_COOLDOWN_MS ?? `${30 * 60 * 1000}`) || 30 * 60 * 1000
+const RAPIDAPI_KEYS = [
+  process.env.RAPIDAPI_KEY?.trim(),
+  process.env.RAPIDAPI_KEY_BACKUP?.trim(),
+  process.env.RAPIDAPI_KEY_BACKUP_666?.trim(),
+].filter((key): key is string => Boolean(key))
+const rapidApiQuotaBlockedUntilByKey = new Map<string, number>()
 
 export type DownloadLink = {
   url: string
@@ -31,183 +21,117 @@ export type DownloadLink = {
 export class ShortsApiError extends Error {
   constructor(
     message: string,
-    readonly code: "not_configured" | "upstream" | "no_download_url"
+    readonly code: "not_configured" | "upstream" | "no_download_url" | "quota_exceeded"
   ) {
     super(message)
     this.name = "ShortsApiError"
   }
 }
 
-export function isApiConfigured(): boolean {
-  return Boolean(process.env.RAPIDAPI_KEY?.trim())
-}
-
-function headers(): HeadersInit {
-  const key = process.env.RAPIDAPI_KEY?.trim()
-  if (!key) {
-    throw new ShortsApiError("RAPIDAPI_KEY is not set in environment", "not_configured")
-  }
-  return {
-    "x-rapidapi-host": HOST,
-    "x-rapidapi-key": key,
-  }
-}
-
-async function rapidGet<T>(path: string): Promise<T> {
-  const res = await fetch(`https://${HOST}${path}`, {
-    headers: headers(),
-    cache: "no-store",
-  })
-
-  const text = await res.text()
-  let data: unknown = null
-  try {
-    data = text ? JSON.parse(text) : null
-  } catch {
-    /* non-JSON */
-  }
-
-  if (!res.ok) {
-    const message =
-      typeof data === "object" && data && "message" in data
-        ? String((data as { message: unknown }).message)
-        : text || res.statusText
-    throw new ShortsApiError(message || `API error (${res.status})`, "upstream")
-  }
-
-  return data as T
-}
-
-type RawThumbnail = { url?: string; width?: number; height?: number }
-type RawQuality = {
-  id?: string | number
-  type?: string
-  quality?: string
-  size?: number
-}
-type RawVideoInfo = {
-  title?: string
-  author?: string
-  ownerChannelName?: string
-  lengthSeconds?: string | number
-  thumbnail?: RawThumbnail[]
-  availableQuality?: RawQuality[]
-}
 type RawDownload = {
   file?: string
   reserved_file?: string
   mime?: string
 }
 
-const RES_ORDER: Record<string, number> = {
-  "1080p": 5,
-  "720p": 4,
-  "480p": 3,
-  "360p": 2,
-  "240p": 1,
-  "144p": 0,
+export function isApiConfigured(): boolean {
+  return RAPIDAPI_KEYS.length > 0
 }
 
-function parseQualitiesByType(
-  raw: RawQuality[] | undefined,
-  mediaType: "video" | "audio"
-): QualityOption[] {
-  if (!raw?.length) return []
-
-  const map = new Map<string, QualityOption>()
-  for (const q of raw) {
-    if (q.type !== mediaType || q.id == null || q.id === 0) continue
-    const id = String(q.id)
-    const label = q.quality && q.quality !== "Unknown" ? q.quality : id
-    const size = typeof q.size === "number" ? q.size : null
-    const prev = map.get(label)
-    if (!prev || (size ?? 0) > (prev.size ?? 0)) {
-      map.set(label, { id, label, size })
-    }
+function headers(key?: string): HeadersInit {
+  const resolvedKey = key?.trim() || RAPIDAPI_KEYS[0]
+  if (!resolvedKey) {
+    throw new ShortsApiError(
+      "Set RAPIDAPI_KEY (or RAPIDAPI_KEY_BACKUP / RAPIDAPI_KEY_BACKUP_666) in environment",
+      "not_configured"
+    )
   }
+  return {
+    "x-rapidapi-host": HOST,
+    "x-rapidapi-key": resolvedKey,
+  }
+}
 
-  if (mediaType === "video") {
-    return [...map.values()].sort(
-      (a, b) => (RES_ORDER[b.label] ?? -1) - (RES_ORDER[a.label] ?? -1)
+function isRapidApiQuotaMessage(message: string): boolean {
+  return /(exceeded|over).*(quota|plan)|monthly quota|quota for requests/i.test(message)
+}
+
+function isRapidApiKeyScopedFailure(message: string): boolean {
+  return /(not subscribed|invalid api key|unauthorized|forbidden|access denied)/i.test(message)
+}
+
+async function rapidGet<T>(path: string): Promise<T> {
+  const now = Date.now()
+  const availableKeys = RAPIDAPI_KEYS.filter(
+    (key) => (rapidApiQuotaBlockedUntilByKey.get(key) ?? 0) <= now
+  )
+
+  if (!availableKeys.length) {
+    throw new ShortsApiError(
+      "RapidAPI quota is exhausted on all configured keys. Please wait for reset or upgrade your plan.",
+      "quota_exceeded"
     )
   }
 
-  return [...map.values()].sort((a, b) => (b.size ?? 0) - (a.size ?? 0))
-}
+  let sawQuotaError = false
+  let sawKeyFailure = false
 
-function parseQualities(raw: RawQuality[] | undefined): QualityOption[] {
-  return parseQualitiesByType(raw, "video")
-}
+  for (const key of availableKeys) {
+    const res = await fetch(`https://${HOST}${path}`, {
+      headers: headers(key),
+      cache: "no-store",
+    })
 
-function parseAudioQualities(raw: RawQuality[] | undefined): QualityOption[] {
-  return parseQualitiesByType(raw, "audio")
-}
+    const text = await res.text()
+    let data: unknown = null
+    try {
+      data = text ? JSON.parse(text) : null
+    } catch {
+      // Non-JSON body from upstream.
+    }
 
-function pickThumbnail(thumbs: RawThumbnail[] | undefined): string | null {
-  if (!thumbs?.length) return null
-  return [...thumbs].sort((a, b) => (b.width ?? 0) - (a.width ?? 0))[0]?.url ?? null
-}
+    if (res.ok) {
+      return data as T
+    }
 
-function defaultQualityId(qualities: QualityOption[]): string {
-  return qualities.find((q) => q.label === "720p")?.id ?? qualities[0]?.id ?? ""
-}
+    const message =
+      typeof data === "object" && data && "message" in data
+        ? String((data as { message: unknown }).message)
+        : text || res.statusText
 
-function defaultAudioQualityId(qualities: QualityOption[]): string {
-  if (!qualities.length) return ""
-  return [...qualities].sort((a, b) => (b.size ?? 0) - (a.size ?? 0))[0]?.id ?? ""
-}
+    if (isRapidApiQuotaMessage(message)) {
+      sawQuotaError = true
+      rapidApiQuotaBlockedUntilByKey.set(key, Date.now() + RAPIDAPI_QUOTA_COOLDOWN_MS)
+      continue
+    }
 
-/** MCP: Get_Video_Details_and_Quality */
-export async function getVideoInfo(
-  videoId: string,
-  defaultTitle = "YouTube Video"
-): Promise<VideoInfo> {
-  const data = await rapidGet<RawVideoInfo>(
-    `/get-video-info/${encodeURIComponent(videoId)}?return_available_quality=true`
-  )
+    if (isRapidApiKeyScopedFailure(message)) {
+      sawKeyFailure = true
+      rapidApiQuotaBlockedUntilByKey.set(key, Date.now() + RAPIDAPI_QUOTA_COOLDOWN_MS)
+      continue
+    }
 
-  const qualities = parseQualities(data.availableQuality)
-  const defaultId = defaultQualityId(qualities)
-  const durationRaw = data.lengthSeconds
-
-  return {
-    videoId,
-    title: data.title?.trim() || defaultTitle,
-    author: data.author ?? data.ownerChannelName ?? null,
-    thumbnail: pickThumbnail(data.thumbnail),
-    durationSeconds:
-      durationRaw != null && durationRaw !== "" ? Number(durationRaw) || null : null,
-    qualities,
-    defaultQualityId: defaultId,
+    throw new ShortsApiError(message || `API error (${res.status})`, "upstream")
   }
-}
 
-/** MCP: Get_Video_Details_and_Quality (audio tracks only) */
-export async function getAudioInfo(
-  videoId: string,
-  defaultTitle = "YouTube Audio"
-): Promise<VideoInfo> {
-  const data = await rapidGet<RawVideoInfo>(
-    `/get-video-info/${encodeURIComponent(videoId)}?return_available_quality=true`
-  )
-
-  const qualities = parseAudioQualities(data.availableQuality)
-  const defaultId = defaultAudioQualityId(qualities)
-  const durationRaw = data.lengthSeconds
-
-  return {
-    videoId,
-    title: data.title?.trim() || defaultTitle,
-    author: data.author ?? data.ownerChannelName ?? null,
-    thumbnail: pickThumbnail(data.thumbnail),
-    durationSeconds:
-      durationRaw != null && durationRaw !== "" ? Number(durationRaw) || null : null,
-    qualities,
-    defaultQualityId: defaultId,
+  if (sawQuotaError) {
+    throw new ShortsApiError(
+      "RapidAPI quota is exhausted on all configured keys. Please wait for reset or upgrade your plan.",
+      "quota_exceeded"
+    )
   }
+
+  if (sawKeyFailure) {
+    throw new ShortsApiError(
+      "No usable RapidAPI key is currently available. Check subscription/permissions for backup keys.",
+      "upstream"
+    )
+  }
+
+  throw new ShortsApiError("RapidAPI request failed", "upstream")
 }
 
-/** MCP: Get_Shorts_Download_URL */
+/** Download endpoints */
 export async function getShortsDownloadLink(
   videoId: string,
   qualityId: string
@@ -215,12 +139,8 @@ export async function getShortsDownloadLink(
   const data = await rapidGet<RawDownload>(
     `/download_short/${encodeURIComponent(videoId)}?quality=${encodeURIComponent(qualityId)}`
   )
-
   const url = data.file?.trim()
-  if (!url) {
-    throw new ShortsApiError("No download URL returned", "no_download_url")
-  }
-
+  if (!url) throw new ShortsApiError("No download URL returned", "no_download_url")
   return {
     url,
     fallbackUrl: data.reserved_file?.trim() || null,
@@ -228,10 +148,6 @@ export async function getShortsDownloadLink(
   }
 }
 
-/** @deprecated Use getShortsDownloadLink */
-export const getDownloadLink = getShortsDownloadLink
-
-/** MCP: Get_Video_Download_URL */
 export async function getVideoDownloadLink(
   videoId: string,
   qualityId: string
@@ -239,12 +155,8 @@ export async function getVideoDownloadLink(
   const data = await rapidGet<RawDownload>(
     `/download_video/${encodeURIComponent(videoId)}?quality=${encodeURIComponent(qualityId)}`
   )
-
   const url = data.file?.trim()
-  if (!url) {
-    throw new ShortsApiError("No download URL returned", "no_download_url")
-  }
-
+  if (!url) throw new ShortsApiError("No download URL returned", "no_download_url")
   return {
     url,
     fallbackUrl: data.reserved_file?.trim() || null,
@@ -252,7 +164,6 @@ export async function getVideoDownloadLink(
   }
 }
 
-/** MCP: Get_Audio_Download_URL */
 export async function getAudioDownloadLink(
   videoId: string,
   qualityId: string
@@ -260,12 +171,8 @@ export async function getAudioDownloadLink(
   const data = await rapidGet<RawDownload>(
     `/download_audio/${encodeURIComponent(videoId)}?quality=${encodeURIComponent(qualityId)}`
   )
-
   const url = data.file?.trim()
-  if (!url) {
-    throw new ShortsApiError("No download URL returned", "no_download_url")
-  }
-
+  if (!url) throw new ShortsApiError("No download URL returned", "no_download_url")
   return {
     url,
     fallbackUrl: data.reserved_file?.trim() || null,
@@ -273,7 +180,7 @@ export async function getAudioDownloadLink(
   }
 }
 
-/** Poll CDN until HEAD succeeds (files are sometimes prepared async). */
+/** Poll CDN until HEAD succeeds (files can be prepared asynchronously). */
 export async function resolveReadyUrl(link: DownloadLink, maxAttempts = 8): Promise<string> {
   const urls = [link.url, link.fallbackUrl].filter(Boolean) as string[]
 
@@ -283,7 +190,7 @@ export async function resolveReadyUrl(link: DownloadLink, maxAttempts = 8): Prom
         const head = await fetch(url, { method: "HEAD", cache: "no-store" })
         if (head.ok) return url
       } catch {
-        /* retry */
+        // Retry below.
       }
     }
     if (i < maxAttempts - 1) {
