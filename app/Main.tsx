@@ -121,7 +121,7 @@ export default function Home({ posts = [] }) {
         aria-labelledby="hero-title"
         className="border-b border-white/10 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"
       >
-        <div className={`${SECTION} py-7 md:py-12 lg:py-16`}>
+        <div className={`${SECTION} py-7 md:py-8`}>
           <div className="flex flex-col gap-4">
             <header className="text-center">
               <p
