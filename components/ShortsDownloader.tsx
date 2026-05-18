@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
+import axios from "axios"
+import fileDownload from "js-file-download"
 import {
   Download,
   Link2,
@@ -37,11 +39,6 @@ function formatDuration(seconds: number | null): string | null {
   return `${m}:${s.toString().padStart(2, "0")}`
 }
 
-function downloadHref(videoId: string, qualityId: string): string {
-  const q = new URLSearchParams({ videoId, quality: qualityId })
-  return `/api/shorts/download?${q}`
-}
-
 type ShortsDownloaderProps = {
   variant?: "hero" | "default"
   autoFocus?: boolean
@@ -49,25 +46,29 @@ type ShortsDownloaderProps = {
 
 const BTN =
   "inline-flex min-h-11 touch-manipulation items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-[background-color,border-color,opacity] duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/30 disabled:cursor-not-allowed disabled:opacity-45"
-const DEFAULT_SHORTS_QUALITY_ID = "247"
+const RAPIDAPI_HOST = "youtube-shorts-video-downloader-and-converter.p.rapidapi.com"
+const DEFAULT_RAPIDAPI_KEY = process.env.NEXT_PUBLIC_RAPIDAPI_KEY?.trim() ?? ""
+const DEFAULT_SHORTS_QUALITY = "360p"
+const SHORTS_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p"] as const
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
+
+function sanitizeFileName(name: string): string {
+  const normalized = name.trim().replace(/[\\/:*?"<>|]+/g, "_")
+  if (!normalized) return "youtube-shorts-video"
+  return normalized
+}
 
 type VideoResultCardProps = {
   video: VideoPreview
-  downloading: boolean
-  downloadProgress: number
-  onDownload: () => void
   t: ReturnType<typeof useTranslations<"ShortsDownloader">>
-  btnClass: string
 }
 
-function VideoResultCard({
-  video,
-  downloading,
-  downloadProgress,
-  onDownload,
-  t,
-  btnClass,
-}: VideoResultCardProps) {
+function VideoResultCard({ video, t }: VideoResultCardProps) {
   const duration = formatDuration(video.durationSeconds)
 
   return (
@@ -117,41 +118,98 @@ function VideoResultCard({
           </div>
         </div>
 
-        <div className="mt-4 border-t border-white/10 pt-4 sm:mt-5 sm:pt-5">
-          <button
-            type="button"
-            onClick={onDownload}
-            disabled={downloading}
-            className={`${btnClass} w-full bg-gradient-to-r from-primary-600 to-primary-500 px-6 py-3.5 text-base text-white shadow-lg shadow-primary-900/25 hover:brightness-110`}
-          >
-            {downloading ? (
-              <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
-            ) : (
-              <Download className="h-5 w-5" aria-hidden />
-            )}
-            <span>{downloading ? t("downloading") : t("button_download")}</span>
-          </button>
-          {downloading ? (
-            <div className="mt-3">
-              <div className="mb-1 flex items-center justify-between text-xs text-slate-400">
-                <span>Preparing file...</span>
-                <span>{downloadProgress}%</span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800/80">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-primary-500 to-cyan-400 transition-[width] duration-500"
-                  style={{ width: `${downloadProgress}%` }}
-                />
-              </div>
-            </div>
-          ) : null}
-        </div>
-
-        <p className="mt-3 text-center text-[11px] leading-relaxed text-slate-500 sm:text-left">
+        <p className="mt-4 border-t border-white/10 pt-4 text-center text-[11px] leading-relaxed text-slate-500 sm:mt-5 sm:pt-5 sm:text-left">
           {t("download_note")}
         </p>
       </div>
     </article>
+  )
+}
+
+type DownloadFeedbackProps = {
+  loading: boolean
+  downloading: boolean
+  errorMessage: string | null
+  downloadError: string | null
+  downloadSuccess: string | null
+  downloadProgress: number
+  downloadLoadedBytes: number
+  downloadTotalBytes: number | null
+  t: ReturnType<typeof useTranslations<"ShortsDownloader">>
+}
+
+function DownloadFeedback({
+  loading,
+  downloading,
+  errorMessage,
+  downloadError,
+  downloadSuccess,
+  downloadProgress,
+  downloadLoadedBytes,
+  downloadTotalBytes,
+  t,
+}: DownloadFeedbackProps) {
+  return (
+    <div className="mb-4" aria-live="polite" aria-busy={loading || downloading}>
+      {errorMessage ? (
+        <div
+          role="alert"
+          className="flex items-start gap-2.5 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3.5 py-3 text-sm text-orange-100"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-orange-300" aria-hidden />
+          <p>{errorMessage}</p>
+        </div>
+      ) : null}
+
+      {loading ? (
+        <p className="flex items-center justify-center gap-2 py-2 text-sm text-slate-400">
+          <Loader2 className="h-4 w-4 animate-spin text-primary-400" aria-hidden />
+          {t("loading")}
+        </p>
+      ) : null}
+
+      {downloading ? (
+        <div className="mt-2 rounded-xl border border-primary-500/25 bg-primary-500/10 px-3.5 py-3">
+          <div className="mb-1.5 flex items-center justify-between text-xs text-slate-300">
+            <span>{t("download_progress_label")}</span>
+            <span>{downloadProgress}%</span>
+          </div>
+          <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800/80">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-primary-500 to-cyan-400 transition-[width] duration-300"
+              style={{ width: `${downloadProgress}%` }}
+            />
+          </div>
+          <p className="mt-1.5 text-xs text-slate-400">
+            {downloadTotalBytes && downloadTotalBytes > 0
+              ? t("download_progress_bytes", {
+                  loaded: formatBytes(downloadLoadedBytes),
+                  total: formatBytes(downloadTotalBytes),
+                })
+              : t("download_progress_bytes_unknown", {
+                  loaded: formatBytes(downloadLoadedBytes),
+                })}
+          </p>
+        </div>
+      ) : null}
+
+      {downloadError ? (
+        <div
+          role="alert"
+          className="mt-2 flex items-start gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-3 text-sm text-rose-100"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300" aria-hidden />
+          <p>{downloadError}</p>
+        </div>
+      ) : null}
+
+      {downloadSuccess ? (
+        <div className="mt-2 flex items-start gap-2.5 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3.5 py-3 text-sm text-emerald-100">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" aria-hidden />
+          <p>{downloadSuccess}</p>
+        </div>
+      ) : null}
+    </div>
   )
 }
 
@@ -161,11 +219,17 @@ export default function ShortsDownloader({
 }: ShortsDownloaderProps) {
   const t = useTranslations("ShortsDownloader")
   const inputRef = useRef<HTMLInputElement>(null)
+  const progressTimerRef = useRef<number | null>(null)
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState(0)
+  const [downloadLoadedBytes, setDownloadLoadedBytes] = useState(0)
+  const [downloadTotalBytes, setDownloadTotalBytes] = useState<number | null>(null)
+  const [quality, setQuality] = useState<string>(DEFAULT_SHORTS_QUALITY)
   const [errorKey, setErrorKey] = useState<ApiErrorCode | null>(null)
+  const [downloadError, setDownloadError] = useState<string | null>(null)
+  const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null)
   const [video, setVideo] = useState<VideoPreview | null>(null)
 
   useEffect(() => {
@@ -174,10 +238,45 @@ export default function ShortsDownloader({
     if (mq.matches) inputRef.current?.focus({ preventScroll: true })
   }, [autoFocus])
 
+  const stopProgressSimulation = useCallback(() => {
+    if (progressTimerRef.current !== null) {
+      window.clearInterval(progressTimerRef.current)
+      progressTimerRef.current = null
+    }
+  }, [])
+
+  const startProgressSimulation = useCallback(() => {
+    stopProgressSimulation()
+    progressTimerRef.current = window.setInterval(() => {
+      setDownloadProgress((prev) => {
+        if (prev >= 99) return 99
+        if (prev < 25) return Math.min(prev + 4, 99)
+        if (prev < 55) return Math.min(prev + 2, 99)
+        if (prev < 85) return Math.min(prev + 1, 99)
+        return Math.min(prev + (Math.random() < 0.32 ? 1 : 0), 99)
+      })
+    }, 180)
+  }, [stopProgressSimulation])
+
+  const resetDownloadState = useCallback(() => {
+    stopProgressSimulation()
+    setDownloadError(null)
+    setDownloadSuccess(null)
+    setDownloadProgress(0)
+    setDownloadLoadedBytes(0)
+    setDownloadTotalBytes(null)
+  }, [stopProgressSimulation])
+
+  const resetPreviewState = useCallback(() => {
+    setVideo(null)
+    setErrorKey(null)
+    resetDownloadState()
+  }, [resetDownloadState])
+
   const fetchVideo = useCallback(async () => {
     setErrorKey(null)
+    resetDownloadState()
     setVideo(null)
-    setDownloadProgress(0)
     setLoading(true)
 
     try {
@@ -200,7 +299,7 @@ export default function ShortsDownloader({
     } finally {
       setLoading(false)
     }
-  }, [url])
+  }, [resetDownloadState, url])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -213,6 +312,7 @@ export default function ShortsDownloader({
       const text = await navigator.clipboard.readText()
       if (text.trim()) {
         setUrl(text.trim())
+        resetPreviewState()
         inputRef.current?.focus()
       }
     } catch {
@@ -220,20 +320,95 @@ export default function ShortsDownloader({
     }
   }
 
-  const handleDownload = () => {
-    if (!video || downloading) return
+  const handleDownload = async () => {
+    const selectedVideo = video
+    if (!selectedVideo || downloading) return
+    if (!DEFAULT_RAPIDAPI_KEY.trim()) {
+      setDownloadError(t("error_missing_rapidapi_key"))
+      return
+    }
+
+    setDownloadError(null)
+    setDownloadSuccess(null)
     setDownloading(true)
-    setDownloadProgress(10)
-    const intervalId = window.setInterval(() => {
-      setDownloadProgress((current) => Math.min(current + 8, 90))
-    }, 350)
-    window.location.assign(downloadHref(video.videoId, DEFAULT_SHORTS_QUALITY_ID))
-    window.setTimeout(() => {
-      window.clearInterval(intervalId)
-      setDownloading(false)
+    setDownloadProgress(6)
+    setDownloadLoadedBytes(0)
+    setDownloadTotalBytes(null)
+    startProgressSimulation()
+
+    const requestUrl = `https://${RAPIDAPI_HOST}/download-short-mp4/${selectedVideo.videoId}?quality=${quality}`
+
+    try {
+      const response = await axios({
+        url: requestUrl,
+        method: "GET",
+        responseType: "blob",
+        headers: {
+          "x-rapidapi-host": RAPIDAPI_HOST,
+          "x-rapidapi-key": DEFAULT_RAPIDAPI_KEY.trim(),
+        },
+        onDownloadProgress: (progressEvent) => {
+          setDownloadLoadedBytes(progressEvent.loaded)
+          const total = progressEvent.total
+          if (typeof total === "number" && Number.isFinite(total) && total > 0) {
+            setDownloadTotalBytes(total)
+            const actualPct = Math.round((progressEvent.loaded / total) * 100)
+            if (actualPct >= 100 || progressEvent.loaded >= total) return
+            setDownloadProgress((prev) => {
+              const guidedPct = actualPct < 25 ? actualPct + 8 : actualPct + 4
+              return Math.min(99, Math.max(prev, guidedPct, 12))
+            })
+            return
+          }
+
+          if (typeof progressEvent.progress === "number") {
+            const actualPct = Math.round(progressEvent.progress * 100)
+            if (actualPct >= 100) return
+            setDownloadProgress((prev) => Math.min(99, Math.max(prev, actualPct + 4, 12)))
+          }
+        },
+      })
+      const contentType = String(response.headers["content-type"] || "")
+      if (!contentType.includes("octet-stream") && !contentType.includes("video")) {
+        const maybeText = await response.data.text()
+        throw new Error(maybeText?.slice(0, 200) || "Invalid media response")
+      }
+      const blob = response.data
+      const fileName = `${sanitizeFileName(selectedVideo.title)}.mp4`
+
+      stopProgressSimulation()
+      setDownloadProgress(100)
+      setDownloadLoadedBytes(blob.size)
+      setDownloadTotalBytes((current) => current ?? blob.size)
+      fileDownload(blob, fileName)
+
+      setDownloadSuccess(
+        t("download_success", {
+          filename: fileName,
+          size: formatBytes(blob.size),
+        })
+      )
+      setVideo(null)
+    } catch (error) {
       setDownloadProgress(0)
-    }, 150000)
+      setDownloadLoadedBytes(0)
+      setDownloadTotalBytes(null)
+      const message = axios.isAxiosError(error)
+        ? error.response?.data?.message ||
+          error.response?.statusText ||
+          error.message ||
+          t("error_download_failed")
+        : error instanceof Error
+          ? error.message
+          : t("error_download_failed")
+      setDownloadError(`${t("error_download_failed")} (${message})`)
+    } finally {
+      stopProgressSimulation()
+      setDownloading(false)
+    }
   }
+
+  useEffect(() => () => stopProgressSimulation(), [stopProgressSimulation])
 
   const isHero = variant === "hero"
   const shellClass = isHero
@@ -241,44 +416,27 @@ export default function ShortsDownloader({
     : "mx-auto w-full max-w-2xl rounded-2xl border border-white/10 bg-slate-900/50 p-4 backdrop-blur-sm sm:p-8"
 
   const errorMessage = getDownloaderErrorMessage(t, errorKey)
-
-  const showStatus = Boolean(loading || video || errorMessage)
+  const canDownload = Boolean(video)
 
   return (
     <div className={shellClass}>
-      <div
-        className={showStatus ? "mt-4 min-h-[4.5rem]" : ""}
-        aria-live="polite"
-        aria-busy={loading}
-      >
-        {errorMessage && (
-          <div
-            role="alert"
-            className="flex items-start gap-2.5 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3.5 py-3 text-sm text-orange-100"
-          >
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-orange-300" aria-hidden />
-            <p>{errorMessage}</p>
-          </div>
-        )}
+      <DownloadFeedback
+        loading={loading}
+        downloading={downloading}
+        errorMessage={errorMessage}
+        downloadError={downloadError}
+        downloadSuccess={downloadSuccess}
+        downloadProgress={downloadProgress}
+        downloadLoadedBytes={downloadLoadedBytes}
+        downloadTotalBytes={downloadTotalBytes}
+        t={t}
+      />
 
-        {loading && !video && (
-          <p className="flex items-center justify-center gap-2 py-2 text-sm text-slate-400">
-            <Loader2 className="h-4 w-4 animate-spin text-primary-400" aria-hidden />
-            {t("loading")}
-          </p>
-        )}
-
-        {video ? (
-          <VideoResultCard
-            video={video}
-            downloading={downloading}
-            downloadProgress={downloadProgress}
-            onDownload={handleDownload}
-            t={t}
-            btnClass={BTN}
-          />
-        ) : null}
-      </div>
+      {video ? (
+        <div className="mt-4">
+          <VideoResultCard video={video} t={t} />
+        </div>
+      ) : null}
       <form onSubmit={handleSubmit}>
         <label htmlFor="shorts-url" className="sr-only">
           {t("input_label")}
@@ -299,24 +457,57 @@ export default function ShortsDownloader({
               enterKeyHint="go"
               placeholder={t("input_placeholder")}
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => {
+                setUrl(e.target.value)
+                resetPreviewState()
+              }}
               className="w-full rounded-xl border border-white/15 bg-slate-950/60 py-3 pl-10 pr-3 text-base text-slate-100 transition-[border-color,box-shadow] duration-200 placeholder:text-slate-500 focus:border-primary-400/60 focus:outline-none focus:ring-4 focus:ring-primary-500/20 md:min-h-12 md:py-3.5 md:pl-11 md:pr-4"
             />
           </div>
 
-          <div className="flex flex-col gap-2 md:shrink-0 md:flex-row md:gap-2">
-            <button
-              type="submit"
-              disabled={loading || !url.trim()}
-              className={`${BTN} order-1 w-full bg-gradient-to-r from-primary-600 to-primary-500 px-5 text-white shadow-lg shadow-primary-900/30 hover:brightness-110 md:order-2 md:min-w-[132px]`}
+          <div className="relative min-w-0 md:w-[140px]">
+            <select
+              value={quality}
+              onChange={(e) => setQuality(e.target.value)}
+              className="w-full rounded-xl border border-white/15 bg-slate-950/60 py-3 pl-3 pr-3 text-sm text-slate-100 transition-[border-color,box-shadow] duration-200 focus:border-primary-400/60 focus:outline-none focus:ring-4 focus:ring-primary-500/20 md:min-h-12 md:py-3.5"
             >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              ) : (
-                <ArrowRight className="h-4 w-4" aria-hidden />
-              )}
-              <span>{loading ? t("loading") : t("button_fetch")}</span>
-            </button>
+              {SHORTS_QUALITY_OPTIONS.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-2 md:shrink-0 md:flex-row md:gap-2">
+            {canDownload ? (
+              <button
+                type="button"
+                onClick={() => void handleDownload()}
+                disabled={downloading}
+                className={`${BTN} order-1 w-full bg-gradient-to-r from-primary-600 to-primary-500 px-5 text-white shadow-lg shadow-primary-900/30 hover:brightness-110 md:order-2 md:min-w-[132px]`}
+              >
+                {downloading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                ) : (
+                  <Download className="h-4 w-4" aria-hidden />
+                )}
+                <span>{downloading ? t("downloading") : t("button_download")}</span>
+              </button>
+            ) : (
+              <button
+                type="submit"
+                disabled={loading || !url.trim()}
+                className={`${BTN} order-1 w-full bg-gradient-to-r from-primary-600 to-primary-500 px-5 text-white shadow-lg shadow-primary-900/30 hover:brightness-110 md:order-2 md:min-w-[132px]`}
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                ) : (
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                )}
+                <span>{loading ? t("loading") : t("button_fetch")}</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => void handlePaste()}

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Shorts 下载器</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #222;
+    --accent: #ff4444;
+    --accent2: #ff8c00;
+    --text: #f0f0f0;
+    --muted: #666;
+    --success: #00e676;
+    --mono: 'Space Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,68,68,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,68,68,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  .corner-decor {
+    position: fixed;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    opacity: 0.4;
+    letter-spacing: 2px;
+  }
+  .corner-decor.tl { top: 1.5rem; left: 1.5rem; }
+  .corner-decor.tr { top: 1.5rem; right: 1.5rem; text-align: right; }
+  .corner-decor.bl { bottom: 1.5rem; left: 1.5rem; }
+
+  .container {
+    width: 100%;
+    max-width: 680px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header {
+    margin-bottom: 3rem;
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    margin-bottom: 1rem;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  /* API Key section */
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .input-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    transition: border-color 0.2s;
+  }
+
+  .input-wrap:focus-within {
+    border-color: var(--accent);
+  }
+
+  .input-wrap input, .input-wrap select {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 0.85rem 1rem;
+  }
+
+  .input-wrap select option {
+    background: #1a1a1a;
+    color: var(--text);
+  }
+
+  .input-icon {
+    padding: 0 0.75rem;
+    color: var(--muted);
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    transition: background 0.2s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn:hover { background: #ff2222; }
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled { background: #333; color: #555; cursor: not-allowed; }
+
+  .btn-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  /* Status / log */
+  .log {
+    margin-top: 1.5rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 1rem;
+    font-size: 12px;
+    line-height: 1.8;
+    min-height: 60px;
+    display: none;
+  }
+
+  .log.visible { display: block; }
+
+  .log-line { display: flex; gap: 8px; align-items: flex-start; }
+  .log-time { color: var(--muted); flex-shrink: 0; }
+  .log-msg.ok { color: var(--success); }
+  .log-msg.err { color: var(--accent); }
+  .log-msg.info { color: #aaa; }
+  .log-msg.warn { color: var(--accent2); }
+
+  /* Progress bar */
+  .progress-wrap {
+    margin-top: 1rem;
+    display: none;
+  }
+  .progress-wrap.visible { display: block; }
+  .progress-track {
+    height: 3px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Result card */
+  .result-card {
+    margin-top: 1.5rem;
+    border: 1px solid var(--success);
+    background: rgba(0,230,118,0.04);
+    padding: 1.25rem;
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+  .result-card.visible { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-title {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--success);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .result-info {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    line-height: 1.8;
+  }
+
+  .result-info span { color: var(--text); }
+
+  .btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.75rem 1.5rem;
+    background: var(--success);
+    color: #000;
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s;
+  }
+  .btn-download:hover { opacity: 0.85; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+
+  /* Spinner */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: none;
+  }
+  .spinner.visible { display: block; }
+
+  /* Tip */
+  .tip {
+    margin-top: 1rem;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.7;
+    padding: 0.75rem;
+    border-left: 2px solid var(--accent2);
+    background: rgba(255,140,0,0.04);
+  }
+  .tip a { color: var(--accent2); text-decoration: none; }
+  .tip a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="corner-decor tl">SYS://YT-DL<br>v1.0.0</div>
+<div class="corner-decor tr">RAPIDAPI<br>DOWNLOADER</div>
+<div class="corner-decor bl">© 2026</div>
+
+<div class="container">
+  <div class="header">
+    <div class="badge">● ONLINE TOOL</div>
+    <h1>YT <span>SHORTS</span><br>DOWNLOADER</h1>
+    <p class="subtitle">// powered by RapidAPI · youtube-shorts-video-downloader-and-converter</p>
+  </div>
+
+  <!-- API Key -->
+  <div class="input-group">
+    <div class="section-label">// RapidAPI Key</div>
+    <div class="input-wrap">
+      <span class="input-icon">🔑</span>
+      <input type="password" id="apiKey" placeholder="输入你的 RapidAPI Key" />
+    </div>
+  </div>
+
+  <!-- Video ID or URL -->
+  <div class="input-group">
+    <div class="section-label">// YouTube Shorts URL 或 视频 ID</div>
+    <div class="input-wrap">
+      <span class="input-icon">▶</span>
+      <input type="text" id="videoInput" placeholder="https://youtube.com/shorts/mXjX9TMDUkk 或 mXjX9TMDUkk" />
+    </div>
+  </div>
+
+  <!-- Quality -->
+  <div class="input-group">
+    <div class="section-label">// 视频质量</div>
+    <div class="input-wrap">
+      <span class="input-icon">◈</span>
+      <select id="quality">
+        <option value="144p">144p — 最小体积</option>
+        <option value="240p">240p</option>
+        <option value="360p" selected>360p — 推荐</option>
+        <option value="480p">480p</option>
+        <option value="720p">720p — 高清</option>
+        <option value="1080p">1080p — 全高清</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="btn" id="fetchBtn" onclick="fetchVideo()">
+    <div class="btn-inner">
+      <div class="spinner" id="spinner"></div>
+      <span id="btnText">▼ 获取下载链接</span>
+    </div>
+  </button>
+
+  <div class="tip">
+    ⚠ 需要自备 RapidAPI Key。前往 <a href="https://rapidapi.com/ytjar/api/youtube-shorts-video-downloader-and-converter" target="_blank">RapidAPI</a> 免费订阅此 API（每月 100 次免费调用）。
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-label"><span id="progressText">正在请求...</span><span id="progressPct">0%</span></div>
+  </div>
+
+  <!-- Log -->
+  <div class="log" id="log"></div>
+
+  <!-- Result -->
+  <div class="result-card" id="resultCard">
+    <div class="result-title">✓ 下载就绪</div>
+    <div class="result-info" id="resultInfo"></div>
+    <a id="downloadBtn" class="btn-download">
+      ↓ 下载 MP4
+    </a>
+  </div>
+</div>
+
+<script>
+  function log(msg, type = 'info') {
+    const logEl = document.getElementById('log');
+    logEl.classList.add('visible');
+    const now = new Date().toLocaleTimeString('zh', {hour12: false});
+    logEl.innerHTML += `<div class="log-line"><span class="log-time">[${now}]</span><span class="log-msg ${type}">${msg}</span></div>`;
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function setProgress(pct, text) {
+    const wrap = document.getElementById('progressWrap');
+    wrap.classList.add('visible');
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressText').textContent = text;
+    document.getElementById('progressPct').textContent = pct + '%';
+  }
+
+  function extractVideoId(input) {
+    input = input.trim();
+    // If it's a URL, extract the ID
+    const patterns = [
+      /youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/,
+      /youtu\.be\/([A-Za-z0-9_-]{11})/,
+      /youtube\.com\/watch\?v=([A-Za-z0-9_-]{11})/,
+      /^([A-Za-z0-9_-]{11})$/
+    ];
+    for (const p of patterns) {
+      const m = input.match(p);
+      if (m) return m[1];
+    }
+    return null;
+  }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+
+  async function fetchVideo() {
+    const apiKey = document.getElementById('apiKey').value.trim();
+    const videoInput = document.getElementById('videoInput').value.trim();
+    const quality = document.getElementById('quality').value;
+
+    // Reset UI
+    document.getElementById('log').innerHTML = '';
+    document.getElementById('log').classList.remove('visible');
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('progressWrap').classList.remove('visible');
+    setProgress(0, '准备中...');
+
+    if (!apiKey) { log('❌ 请输入 RapidAPI Key', 'err'); return; }
+    if (!videoInput) { log('❌ 请输入视频 URL 或 ID', 'err'); return; }
+
+    const videoId = extractVideoId(videoInput);
+    if (!videoId) {
+      log('❌ 无法识别视频 ID，请输入完整 URL 或 11 位视频 ID', 'err');
+      return;
+    }
+
+    // Disable button
+    const btn = document.getElementById('fetchBtn');
+    btn.disabled = true;
+    document.getElementById('spinner').classList.add('visible');
+    document.getElementById('btnText').textContent = '请求中...';
+
+    log(`📋 视频 ID: ${videoId}`, 'info');
+    log(`🎬 质量: ${quality}`, 'info');
+    setProgress(10, '正在调用 API...');
+
+    const url = `https://youtube-shorts-video-downloader-and-converter.p.rapidapi.com/download-short-mp4/${videoId}?quality=${quality}`;
+
+    try {
+      log(`🌐 请求: ${url}`, 'info');
+      setProgress(30, '正在下载视频流...');
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'x-rapidapi-host': 'youtube-shorts-video-downloader-and-converter.p.rapidapi.com',
+          'x-rapidapi-key': apiKey
+        }
+      });
+
+      setProgress(60, '接收响应...');
+      log(`📡 HTTP 状态: ${response.status} ${response.statusText}`, response.ok ? 'ok' : 'err');
+
+      // Rate limit info
+      const remaining = response.headers.get('x-ratelimit-requests-remaining');
+      const limit = response.headers.get('x-ratelimit-requests-limit');
+      if (remaining !== null) {
+        log(`📊 API 配额: ${remaining}/${limit} 次剩余`, 'warn');
+      }
+
+      if (!response.ok) {
+        const errText = await response.text();
+        log(`❌ 请求失败: ${errText || response.statusText}`, 'err');
+        return;
+      }
+
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('octet-stream') && !contentType.includes('video')) {
+        // Maybe JSON error
+        const text = await response.text();
+        log(`⚠ 返回非视频内容: ${text.substring(0, 200)}`, 'warn');
+        return;
+      }
+
+      setProgress(80, '读取视频数据...');
+      const blob = await response.blob();
+      setProgress(95, '生成下载链接...');
+
+      const contentLength = response.headers.get('content-length');
+      const disposition = response.headers.get('content-disposition') || '';
+      let filename = `youtube-shorts-${videoId}-${quality}.mp4`;
+      const fnMatch = disposition.match(/filename="?([^";\n]+)"?/);
+      if (fnMatch) filename = fnMatch[1].endsWith('.mp4') ? fnMatch[1] : fnMatch[1] + '.mp4';
+
+      const blobUrl = URL.createObjectURL(blob);
+
+      log(`✅ 视频获取成功！大小: ${formatBytes(blob.size)}`, 'ok');
+      log(`📁 文件名: ${filename}`, 'ok');
+      setProgress(100, '完成！');
+
+      // Show result
+      document.getElementById('resultInfo').innerHTML =
+        `视频 ID: <span>${videoId}</span><br>` +
+        `质量: <span>${quality}</span><br>` +
+        `文件大小: <span>${formatBytes(blob.size)}</span><br>` +
+        `文件名: <span>${filename}</span>`;
+
+      const dlBtn = document.getElementById('downloadBtn');
+      dlBtn.href = blobUrl;
+      dlBtn.download = filename;
+      document.getElementById('resultCard').classList.add('visible');
+
+      // Auto-trigger download
+      dlBtn.click();
+      log(`⬇ 已触发自动下载`, 'ok');
+
+    } catch (err) {
+      log(`❌ 网络错误: ${err.message}`, 'err');
+      if (err.message.includes('CORS') || err.message.includes('Failed to fetch')) {
+        log('💡 提示: 若遇到 CORS 问题，请尝试使用浏览器扩展（如 CORS Unblock）或本地代理', 'warn');
+      }
+    } finally {
+      btn.disabled = false;
+      document.getElementById('spinner').classList.remove('visible');
+      document.getElementById('btnText').textContent = '▼ 获取下载链接';
+    }
+  }
+
+  // Enter key support
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') fetchVideo();
+  });
+
+  // Auto-fill demo ID if empty
+  document.getElementById('videoInput').addEventListener('focus', function() {
+    if (!this.value) this.placeholder = 'e.g. mXjX9TMDUkk';
+  });
+</script>
+</body>
+</html>
