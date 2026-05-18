@@ -246,6 +246,39 @@ export default function ShortsDownloader({
 
   return (
     <div className={shellClass}>
+      <div
+        className={showStatus ? "mt-4 min-h-[4.5rem]" : ""}
+        aria-live="polite"
+        aria-busy={loading}
+      >
+        {errorMessage && (
+          <div
+            role="alert"
+            className="flex items-start gap-2.5 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3.5 py-3 text-sm text-orange-100"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-orange-300" aria-hidden />
+            <p>{errorMessage}</p>
+          </div>
+        )}
+
+        {loading && !video && (
+          <p className="flex items-center justify-center gap-2 py-2 text-sm text-slate-400">
+            <Loader2 className="h-4 w-4 animate-spin text-primary-400" aria-hidden />
+            {t("loading")}
+          </p>
+        )}
+
+        {video ? (
+          <VideoResultCard
+            video={video}
+            downloading={downloading}
+            downloadProgress={downloadProgress}
+            onDownload={handleDownload}
+            t={t}
+            btnClass={BTN}
+          />
+        ) : null}
+      </div>
       <form onSubmit={handleSubmit}>
         <label htmlFor="shorts-url" className="sr-only">
           {t("input_label")}
@@ -299,40 +332,6 @@ export default function ShortsDownloader({
           {t("hint")}
         </p>
       </form>
-
-      <div
-        className={showStatus ? "mt-4 min-h-[4.5rem]" : ""}
-        aria-live="polite"
-        aria-busy={loading}
-      >
-        {errorMessage && (
-          <div
-            role="alert"
-            className="flex items-start gap-2.5 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3.5 py-3 text-sm text-orange-100"
-          >
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-orange-300" aria-hidden />
-            <p>{errorMessage}</p>
-          </div>
-        )}
-
-        {loading && !video && (
-          <p className="flex items-center justify-center gap-2 py-2 text-sm text-slate-400">
-            <Loader2 className="h-4 w-4 animate-spin text-primary-400" aria-hidden />
-            {t("loading")}
-          </p>
-        )}
-
-        {video ? (
-          <VideoResultCard
-            video={video}
-            downloading={downloading}
-            downloadProgress={downloadProgress}
-            onDownload={handleDownload}
-            t={t}
-            btnClass={BTN}
-          />
-        ) : null}
-      </div>
 
       {isHero && (
         <ol className="mt-5 grid gap-2 border-t border-white/10 pt-5 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-white/10 sm:pt-6">
