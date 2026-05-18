@@ -46,7 +46,7 @@ const CORE_FACTS = [
 const HOW_TO_STEPS = ["howto_step_1", "howto_step_2", "howto_step_3"] as const
 
 /** Mobile-first section shell (max-w-7xl, aligned with header/footer) */
-const SECTION = "mx-auto w-full max-w-7xl px-4 md:px-6 lg:px-8"
+const SECTION = "mx-auto w-full max-w-7xl px-4 sm:px-6"
 
 /** Vertical rhythm — base = mobile, md/lg = tablet & desktop */
 const SECTION_PY = "py-8 md:py-11 lg:py-14"
@@ -57,7 +57,7 @@ const SECTION_PY = "py-8 md:py-11 lg:py-14"
  */
 const TYPE = {
   badge: "text-xs font-semibold uppercase tracking-[0.12em] text-primary-200",
-  h1: "text-[1.75rem] font-bold leading-[1.2] tracking-tight text-transparent md:text-4xl md:leading-tight lg:text-5xl",
+  h1: "text-2xl font-bold leading-[1.2] tracking-tight text-transparent md:text-3xl md:leading-tight lg:text-4xl",
   h2: "text-xl font-semibold leading-snug text-white md:text-2xl lg:text-[1.75rem] lg:leading-snug",
   sectionIntro: "text-sm leading-7 text-slate-300 md:text-base md:leading-7 lg:max-w-3xl",
   body: "text-sm leading-7 text-slate-300 md:text-base md:leading-7",
@@ -122,10 +122,10 @@ export default function Home({ posts = [] }) {
         className="border-b border-white/10 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950"
       >
         <div className={`${SECTION} py-7 md:py-12 lg:py-16`}>
-          <div className="flex flex-col items-center justify-center gap-2 md:gap-4 lg:gap-6">
+          <div className="flex flex-col gap-4">
             <header className="text-center">
               <p
-                className={`inline-flex max-w-full items-center gap-2 rounded-full border border-primary-400/30 bg-primary-500/10 px-3 py-1.5 ${TYPE.badge}`}
+                className={`inline-flex max-w-full items-center gap-2 rounded-full border border-primary-400/30 bg-primary-500/10 px-3 py-1.5 md:px-3.5 ${TYPE.badge}`}
               >
                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary-400" aria-hidden />
                 <span className="truncate">{t("hero_badge")}</span>
@@ -137,8 +137,8 @@ export default function Home({ posts = [] }) {
                 {t("hero_title")}
               </h1>
 
-              <aside
-                className="fact-chunk mx-auto mt-4 w-full max-w-lg rounded-2xl border border-primary-500/20 bg-primary-500/5 p-4 text-left md:mt-5 md:max-w-none md:p-5 lg:mx-0"
+              <section
+                className="fact-chunk mx-auto mt-4 w-full max-w-lg rounded-2xl border border-primary-500/20 bg-primary-500/5 p-4 text-left md:mt-5 md:max-w-none md:p-5"
                 aria-label="Quick answer"
               >
                 <p className={TYPE.body}>
@@ -172,10 +172,10 @@ export default function Home({ posts = [] }) {
                     {t("content_updated")}: {HOME_LAST_MODIFIED}
                   </time>
                 </p>
-              </aside>
+              </section>
             </header>
 
-            <div className="mt-6 w-full min-w-0 md:mt-0 lg:col-span-7">
+            <div className="w-full min-w-0 lg:col-span-7">
               <ShortsDownloader variant="hero" autoFocus />
             </div>
           </div>
