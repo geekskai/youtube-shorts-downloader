@@ -110,18 +110,18 @@ function VideoResultCard({ video, t }: VideoResultCardProps) {
           )}
 
           <div className="flex min-w-0 flex-1 flex-col justify-center text-left">
-            <h3 className="line-clamp-3 text-[14px] font-semibold leading-5 text-slate-50 md:line-clamp-2 md:text-[15px] md:leading-snug lg:text-base">
+            <h3 className="line-clamp-3 text-base font-semibold leading-5 text-slate-50 md:line-clamp-2 md:text-lg md:leading-snug lg:text-xl">
               {video.title}
             </h3>
             {video.author && (
-              <p className="mt-1.5 line-clamp-2 text-[13px] leading-5 text-slate-400 md:text-sm">
+              <p className="mt-1 line-clamp-2 text-base leading-5 text-slate-400 md:text-lg">
                 {video.author}
               </p>
             )}
           </div>
         </div>
 
-        <p className="mt-3 border-t border-white/10 pt-3 text-center text-xl leading-relaxed text-yellow-500 md:mt-4 md:pt-4 md:text-left md:text-xs">
+        <p className="mt-3 border-t border-white/10 pt-3 text-center text-xs leading-relaxed text-yellow-500 md:mt-4 md:pt-4 md:text-left md:text-base">
           {t("download_note", { qualities: SHORTS_QUALITY_LABEL })}
         </p>
       </div>
@@ -136,8 +136,6 @@ type DownloadFeedbackProps = {
   downloadError: string | null
   downloadSuccess: string | null
   downloadProgress: number
-  downloadLoadedBytes: number
-  downloadTotalBytes: number | null
   t: ReturnType<typeof useTranslations<"ShortsDownloader">>
 }
 
@@ -148,8 +146,6 @@ function DownloadFeedback({
   downloadError,
   downloadSuccess,
   downloadProgress,
-  downloadLoadedBytes,
-  downloadTotalBytes,
   t,
 }: DownloadFeedbackProps) {
   return (
@@ -183,16 +179,6 @@ function DownloadFeedback({
               style={{ width: `${downloadProgress}%` }}
             />
           </div>
-          <p className="mt-1.5 text-xs text-slate-400">
-            {downloadTotalBytes && downloadTotalBytes > 0
-              ? t("download_progress_bytes", {
-                  loaded: formatBytes(downloadLoadedBytes),
-                  total: formatBytes(downloadTotalBytes),
-                })
-              : t("download_progress_bytes_unknown", {
-                  loaded: formatBytes(downloadLoadedBytes),
-                })}
-          </p>
         </div>
       ) : null}
 
@@ -227,8 +213,6 @@ export default function ShortsDownloader({
   const [loading, setLoading] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState(0)
-  const [downloadLoadedBytes, setDownloadLoadedBytes] = useState(0)
-  const [downloadTotalBytes, setDownloadTotalBytes] = useState<number | null>(null)
   const [quality, setQuality] = useState<string>(DEFAULT_SHORTS_QUALITY)
   const [errorKey, setErrorKey] = useState<ApiErrorCode | null>(null)
   const [downloadError, setDownloadError] = useState<string | null>(null)
@@ -266,8 +250,6 @@ export default function ShortsDownloader({
     setDownloadError(null)
     setDownloadSuccess(null)
     setDownloadProgress(0)
-    setDownloadLoadedBytes(0)
-    setDownloadTotalBytes(null)
   }, [stopProgressSimulation])
 
   const resetPreviewState = useCallback(() => {
@@ -335,8 +317,6 @@ export default function ShortsDownloader({
     setDownloadSuccess(null)
     setDownloading(true)
     setDownloadProgress(6)
-    setDownloadLoadedBytes(0)
-    setDownloadTotalBytes(null)
     startProgressSimulation()
 
     const requestUrl = `https://${RAPIDAPI_HOST}/download-short-mp4/${selectedVideo.videoId}?quality=${quality}`
@@ -351,10 +331,8 @@ export default function ShortsDownloader({
           "x-rapidapi-key": DEFAULT_RAPIDAPI_KEY.trim(),
         },
         onDownloadProgress: (progressEvent) => {
-          setDownloadLoadedBytes(progressEvent.loaded)
           const total = progressEvent.total
           if (typeof total === "number" && Number.isFinite(total) && total > 0) {
-            setDownloadTotalBytes(total)
             const actualPct = Math.round((progressEvent.loaded / total) * 100)
             if (actualPct >= 100 || progressEvent.loaded >= total) return
             setDownloadProgress((prev) => {
@@ -381,8 +359,6 @@ export default function ShortsDownloader({
 
       stopProgressSimulation()
       setDownloadProgress(100)
-      setDownloadLoadedBytes(blob.size)
-      setDownloadTotalBytes((current) => current ?? blob.size)
       fileDownload(blob, fileName)
 
       setDownloadSuccess(
@@ -394,8 +370,6 @@ export default function ShortsDownloader({
       setVideo(null)
     } catch (error) {
       setDownloadProgress(0)
-      setDownloadLoadedBytes(0)
-      setDownloadTotalBytes(null)
       const message = axios.isAxiosError(error)
         ? error.response?.data?.message ||
           error.response?.statusText ||
@@ -423,6 +397,12 @@ export default function ShortsDownloader({
 
   return (
     <div className={shellClass}>
+      {video ? (
+        <div className="mb-2 md:mb-4">
+          <VideoResultCard video={video} t={t} />
+        </div>
+      ) : null}
+
       <DownloadFeedback
         loading={loading}
         downloading={downloading}
@@ -430,16 +410,8 @@ export default function ShortsDownloader({
         downloadError={downloadError}
         downloadSuccess={downloadSuccess}
         downloadProgress={downloadProgress}
-        downloadLoadedBytes={downloadLoadedBytes}
-        downloadTotalBytes={downloadTotalBytes}
         t={t}
       />
-
-      {video ? (
-        <div className="mb-3.5 md:mb-4">
-          <VideoResultCard video={video} t={t} />
-        </div>
-      ) : null}
       <form onSubmit={handleSubmit}>
         <label htmlFor="shorts-url" className="sr-only">
           {t("input_label")}
@@ -522,7 +494,7 @@ export default function ShortsDownloader({
           </div>
         </div>
 
-        <p className="mt-2 text-center text-[11px] leading-relaxed text-slate-500 md:mt-2.5 md:text-left md:text-xs">
+        <p className="mt-2 text-center text-[11px] leading-relaxed text-green-500 md:mt-2.5 md:text-left md:text-base">
           {t("hint", { qualities: SHORTS_QUALITY_LABEL })}
         </p>
       </form>
