@@ -219,7 +219,7 @@
     "download_progress_bytes_unknown": "{loaded} downloaded",
     "download_success": "Download started successfully: {filename} ({size})",
     "error_missing_rapidapi_key": "Please enter your RapidAPI key before downloading.",
-    "error_download_failed": "Download failed. Please check your key, quota, and network.",
+    "error_download_failed": "Download failed. Please check your internet connection and try again in a few minutes.",
     "error_invalid_url": "Please enter a valid YouTube Shorts or video URL.",
     "error_metadata_api_not_configured": "Video preview is not configured. Add NEXT_PUBLIC_YOUTUBE_DATA_API_KEY to .env.local and restart.",
     "error_fetch_failed": "Could not fetch this video. Check the URL and try again.",
