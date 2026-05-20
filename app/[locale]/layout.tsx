@@ -6,7 +6,11 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { notFound } from "next/navigation"
 import React from "react"
 import { routing } from "../i18n/routing"
-import { HOME_LAST_MODIFIED } from "@/lib/seo/home-faq"
+import {
+  HOME_LAST_MODIFIED_ISO,
+  generateHomeFAQSchema,
+  generateHomeHowToSchema,
+} from "@/lib/seo/home-faq"
 
 export const revalidate = 86400 // 24 hours
 
@@ -84,6 +88,7 @@ export const generateMetadata = async ({ params }: Props): Promise<Metadata> => 
     other: {
       "application-name": "YoutubeShortDownloader",
       "apple-mobile-web-app-title": "YoutubeShortDownloader",
+      "last-modified": HOME_LAST_MODIFIED_ISO,
     },
   }
 }
@@ -195,7 +200,7 @@ export default async function RootLayout({
           "@id": `${url}#breadcrumb`,
         },
         inLanguage: inLanguage,
-        dateModified: HOME_LAST_MODIFIED,
+        dateModified: HOME_LAST_MODIFIED_ISO,
       },
       {
         "@type": "BreadcrumbList",
@@ -217,6 +222,8 @@ export default async function RootLayout({
         numberOfItems: downloaderFeatures.length.toString(),
         itemListElement: downloaderFeatures,
       },
+      generateHomeFAQSchema(url),
+      generateHomeHowToSchema(url),
     ],
   }
 

@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import {
-  VIDEO_LAST_MODIFIED,
+  VIDEO_LAST_MODIFIED_ISO,
   generateVideoFAQSchema,
   generateVideoHowToSchema,
 } from "@/lib/seo/video-faq"
@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     robots: { index: true, follow: true },
     alternates: { canonical },
     other: {
-      "last-modified": VIDEO_LAST_MODIFIED,
+      "last-modified": VIDEO_LAST_MODIFIED_ISO,
     },
   }
 }
@@ -83,7 +83,7 @@ export default async function YouTubeVideoDownloaderLayout({ children, params }:
         description: t("seo_description"),
         isPartOf: { "@id": `${BASE_URL}/#website` },
         about: { "@id": `${BASE_URL}/#organization` },
-        dateModified: VIDEO_LAST_MODIFIED,
+        dateModified: VIDEO_LAST_MODIFIED_ISO,
         inLanguage: "en-US",
         breadcrumb: { "@id": `${url}#breadcrumb` },
       },

@@ -2,40 +2,35 @@ import VideoDownloader from "@/components/VideoDownloader"
 import { VIDEO_FAQ_ITEMS, VIDEO_LAST_MODIFIED } from "@/lib/seo/video-faq"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
-import { Shield, Zap, MonitorPlay, FileVideo } from "lucide-react"
+import { Check, Gauge, MonitorPlay, Shield, Sparkles } from "lucide-react"
 
-const CORE_FACTS = [
+const FEATURE_KEYS = [
+  "feature_hd",
+  "feature_safe",
+  "feature_fast",
+  "feature_browser",
+  "feature_no_signup",
+  "feature_cross_device",
+  "feature_online_free",
+] as const
+
+const WHY_ITEMS = [
+  { icon: MonitorPlay, titleKey: "why_hd_title" as const, bodyKey: "why_hd_body" as const },
+  { icon: Shield, titleKey: "why_safe_title" as const, bodyKey: "why_safe_body" as const },
+  { icon: Gauge, titleKey: "why_fast_title" as const, bodyKey: "why_fast_body" as const },
+  { icon: Sparkles, titleKey: "why_compat_title" as const, bodyKey: "why_compat_body" as const },
+] as const
+
+const RELATED_TOOLS = [
   {
-    icon: Zap,
-    labelKey: "fact_instant_label" as const,
-    detailKey: "fact_instant_detail" as const,
-    border: "border-cyan-500/25",
-    bg: "bg-cyan-500/10",
-    labelColor: "text-cyan-200",
+    href: "/",
+    titleKey: "related_shorts_title" as const,
+    descKey: "related_shorts_desc" as const,
   },
   {
-    icon: Shield,
-    labelKey: "fact_free_label" as const,
-    detailKey: "fact_free_detail" as const,
-    border: "border-emerald-500/25",
-    bg: "bg-emerald-500/10",
-    labelColor: "text-emerald-200",
-  },
-  {
-    icon: FileVideo,
-    labelKey: "fact_format_label" as const,
-    detailKey: "fact_format_detail" as const,
-    border: "border-blue-500/25",
-    bg: "bg-blue-500/10",
-    labelColor: "text-blue-200",
-  },
-  {
-    icon: MonitorPlay,
-    labelKey: "fact_device_label" as const,
-    detailKey: "fact_device_detail" as const,
-    border: "border-purple-500/25",
-    bg: "bg-purple-500/10",
-    labelColor: "text-purple-200",
+    href: "/youtube-audio-downloader",
+    titleKey: "related_audio_title" as const,
+    descKey: "related_audio_desc" as const,
   },
 ] as const
 
@@ -91,15 +86,16 @@ export default function VideoMain() {
               >
                 {t("hero_title")}
               </h1>
+              <p className={`mx-auto mt-3 max-w-2xl md:mt-4 lg:max-w-6xl ${TYPE.sectionIntro}`}>
+                {t("hero_subtitle")}
+              </p>
 
               <aside
                 className="fact-chunk mx-auto mt-4 w-full max-w-6xl rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4 text-left md:mt-5 md:max-w-none md:p-5 lg:mx-0"
                 aria-label="Quick answer"
               >
                 <p className={TYPE.body}>
-                  <strong className="font-semibold text-cyan-200">
-                    {t("quick_answer_label")}
-                  </strong>{" "}
+                  <strong className="font-semibold text-cyan-200">{t("quick_answer_label")}</strong>{" "}
                   {t("quick_answer_text")}
                 </p>
                 <ul className={`mt-3 space-y-2.5 md:space-y-2 ${TYPE.bodyMuted}`}>
@@ -145,32 +141,56 @@ export default function VideoMain() {
       </section>
 
       <section
-        id="core-facts"
-        aria-labelledby="core-facts-title"
+        id="features"
+        aria-labelledby="features-title"
         className="border-b border-white/10 bg-slate-950"
       >
         <div className={`${SECTION} ${SECTION_PY}`}>
-          <h2 id="core-facts-title" className={`${sectionHeaderCenter} ${TYPE.h2}`}>
-            {t("core_facts_title")}
+          <h2 id="features-title" className={`${sectionHeaderCenter} ${TYPE.h2}`}>
+            {t("features_title")}
           </h2>
           <p className={`mt-2 md:mt-3 ${sectionHeaderCenter} ${TYPE.sectionIntro} lg:max-w-4xl`}>
-            {t("core_facts_intro")}
+            {t("features_intro")}
           </p>
-          <div className="mt-5 grid grid-cols-1 gap-3 md:mt-7 md:grid-cols-2 md:gap-4 lg:mt-8 lg:grid-cols-4 lg:gap-5">
-            {CORE_FACTS.map(({ icon: Icon, labelKey, detailKey, border, bg, labelColor }) => (
-              <article
-                key={labelKey}
-                className={`flex gap-3 rounded-2xl border p-4 md:block md:p-5 ${border} ${bg}`}
+          <ul className="mx-auto mt-5 grid max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2 md:mt-7 lg:mt-8 lg:max-w-5xl lg:grid-cols-2 lg:gap-4">
+            {FEATURE_KEYS.map((key) => (
+              <li
+                key={key}
+                className="flex items-start gap-3 rounded-2xl border border-white/10 bg-slate-900/45 px-4 py-3.5 md:px-5 md:py-4"
               >
-                <Icon
-                  className={`h-5 w-5 shrink-0 md:mb-3 md:h-6 md:w-6 ${labelColor}`}
-                  strokeWidth={2.25}
+                <Check
+                  className="mt-0.5 h-5 w-5 shrink-0 text-cyan-300"
+                  strokeWidth={2.5}
                   aria-hidden
                 />
-                <div className="min-w-0 flex-1 md:flex-none">
-                  <p className={`${TYPE.factLabel} ${labelColor}`}>{t(labelKey)}</p>
-                  <p className={`mt-1.5 md:mt-2 ${TYPE.factDetail}`}>{t(detailKey)}</p>
-                </div>
+                <span className={TYPE.body}>{t(key)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section
+        id="why-use"
+        aria-labelledby="why-use-title"
+        className="border-b border-white/10 bg-slate-950"
+      >
+        <div className={`${SECTION} ${SECTION_PY}`}>
+          <h2 id="why-use-title" className={`${sectionHeaderCenter} ${TYPE.h2}`}>
+            {t("why_title")}
+          </h2>
+          <p className={`mt-2 md:mt-3 ${sectionHeaderCenter} ${TYPE.sectionIntro} lg:max-w-4xl`}>
+            {t("why_intro")}
+          </p>
+          <div className="mt-5 grid grid-cols-1 gap-3 md:mt-7 md:grid-cols-2 md:gap-4 lg:mt-8 lg:gap-5">
+            {WHY_ITEMS.map(({ icon: Icon, titleKey, bodyKey }) => (
+              <article
+                key={titleKey}
+                className="rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-500/10 to-slate-900/50 p-4 md:p-5"
+              >
+                <Icon className="mb-3 h-6 w-6 text-cyan-300" strokeWidth={2} aria-hidden />
+                <h3 className={TYPE.stepTitle}>{t(titleKey)}</h3>
+                <p className={`mt-2 ${TYPE.stepBody}`}>{t(bodyKey)}</p>
               </article>
             ))}
           </div>
@@ -211,6 +231,35 @@ export default function VideoMain() {
             <strong className="font-medium text-slate-400">{t("how_to_takeaway_label")}</strong>{" "}
             {t("how_to_takeaway")}
           </p>
+        </div>
+      </section>
+
+      <section
+        id="related-tools"
+        aria-labelledby="related-tools-title"
+        className="border-b border-white/10 bg-slate-950"
+      >
+        <div className={`${SECTION} ${SECTION_PY}`}>
+          <h2 id="related-tools-title" className={`${sectionHeaderStack} ${TYPE.h2}`}>
+            {t("related_tools_title")}
+          </h2>
+          <p
+            className={`mx-auto mt-2 max-w-xl md:mt-3 md:max-w-2xl lg:max-w-4xl ${sectionHeaderStack} ${TYPE.sectionIntro}`}
+          >
+            {t("related_tools_intro")}
+          </p>
+          <div className="mx-auto mt-5 grid max-w-xl grid-cols-1 gap-3 md:mt-7 md:max-w-3xl md:grid-cols-2 md:gap-4 lg:mt-8 lg:max-w-7xl">
+            {RELATED_TOOLS.map(({ href, titleKey, descKey }) => (
+              <Link
+                key={href}
+                href={href}
+                className="group rounded-2xl border border-white/10 bg-slate-900/45 p-4 transition hover:border-cyan-500/40 hover:bg-cyan-500/5 md:p-5"
+              >
+                <h3 className={`${TYPE.stepTitle} group-hover:text-cyan-200`}>{t(titleKey)} →</h3>
+                <p className={`mt-2 ${TYPE.stepBody}`}>{t(descKey)}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
