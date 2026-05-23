@@ -48,7 +48,7 @@ export const VIDEO_FAQ_ITEMS: VideoFaqItem[] = [
   },
 ]
 
-export const VIDEO_LAST_MODIFIED = "2026-05-20"
+export const VIDEO_LAST_MODIFIED = "2026-05-23"
 export const VIDEO_LAST_MODIFIED_ISO = `${VIDEO_LAST_MODIFIED}T12:00:00.000Z`
 
 export function generateVideoFAQSchema(baseUrl: string) {

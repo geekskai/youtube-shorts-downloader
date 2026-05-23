@@ -48,7 +48,7 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
   },
 ]
 
-export const HOME_LAST_MODIFIED = "2026-05-20"
+export const HOME_LAST_MODIFIED = "2026-05-23"
 export const HOME_LAST_MODIFIED_ISO = `${HOME_LAST_MODIFIED}T12:00:00.000Z`
 
 export function generateHomeFAQSchema(baseUrl: string) {

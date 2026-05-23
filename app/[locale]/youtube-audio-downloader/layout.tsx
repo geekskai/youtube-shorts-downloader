@@ -4,7 +4,7 @@ import {
   AUDIO_LAST_MODIFIED,
   generateAudioFAQSchema,
   generateAudioHowToSchema,
-} from "@/lib/seo/audio-faq"
+} from "@/app/[locale]/youtube-audio-downloader/audio-faq"
 
 type Props = {
   children: React.ReactNode

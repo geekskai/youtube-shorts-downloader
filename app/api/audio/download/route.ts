@@ -1,4 +1,4 @@
-import { getAudioDownloadLink } from "@/lib/youtube/api"
+import { getAudioDownloadLink } from "@/lib/youtube"
 import { handleDownloadRoute } from "@/app/api/_shared/youtube"
 
 export const runtime = "nodejs"

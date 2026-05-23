@@ -5,7 +5,7 @@ import {
   resolveReadyUrl,
   ShortsApiError,
   type DownloadLink,
-} from "@/lib/youtube/api"
+} from "@/lib/youtube"
 
 export const downloadQuerySchema = z.object({
   videoId: z.string().regex(/^[\w-]{11}$/),

@@ -1,5 +1,8 @@
-import AudioDownloader from "@/components/AudioDownloader"
-import { AUDIO_FAQ_ITEMS, AUDIO_LAST_MODIFIED } from "@/lib/seo/audio-faq"
+import AudioDownloader from "@/app/[locale]/youtube-audio-downloader/AudioDownloader"
+import {
+  AUDIO_FAQ_ITEMS,
+  AUDIO_LAST_MODIFIED,
+} from "@/app/[locale]/youtube-audio-downloader/audio-faq"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { Shield, Zap, Smartphone, Music } from "lucide-react"

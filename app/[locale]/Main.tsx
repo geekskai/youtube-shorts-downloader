@@ -1,6 +1,6 @@
 import ListLayout from "@/layouts/ListLayout"
 import ShortsDownloader from "@/components/ShortsDownloader"
-import { HOME_FAQ_ITEMS, HOME_LAST_MODIFIED } from "@/lib/seo/home-faq"
+import { HOME_FAQ_ITEMS, HOME_LAST_MODIFIED } from "@/app/[locale]/home-faq"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { Check, Gauge, Shield, Sparkles, Smartphone } from "lucide-react"

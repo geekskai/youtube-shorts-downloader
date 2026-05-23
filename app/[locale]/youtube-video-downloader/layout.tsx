@@ -4,7 +4,7 @@ import {
   VIDEO_LAST_MODIFIED_ISO,
   generateVideoFAQSchema,
   generateVideoHowToSchema,
-} from "@/lib/seo/video-faq"
+} from "@/app/[locale]/youtube-video-downloader/video-faq"
 
 type Props = {
   children: React.ReactNode

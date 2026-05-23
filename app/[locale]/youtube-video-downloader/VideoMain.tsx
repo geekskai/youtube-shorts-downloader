@@ -1,5 +1,8 @@
-import VideoDownloader from "@/components/VideoDownloader"
-import { VIDEO_FAQ_ITEMS, VIDEO_LAST_MODIFIED } from "@/lib/seo/video-faq"
+import VideoDownloader from "@/app/[locale]/youtube-video-downloader/VideoDownloader"
+import {
+  VIDEO_FAQ_ITEMS,
+  VIDEO_LAST_MODIFIED,
+} from "@/app/[locale]/youtube-video-downloader/video-faq"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { Check, Gauge, MonitorPlay, Shield, Sparkles } from "lucide-react"

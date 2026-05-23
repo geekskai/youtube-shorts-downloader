@@ -131,22 +131,22 @@ async function rapidGet<T>(path: string): Promise<T> {
   throw new ShortsApiError("RapidAPI request failed", "upstream")
 }
 
-/** Download endpoints */
-export async function getShortsDownloadLink(
-  videoId: string,
-  qualityId: string
-): Promise<DownloadLink> {
-  const data = await rapidGet<RawDownload>(
-    `/download_short/${encodeURIComponent(videoId)}?quality=${encodeURIComponent(qualityId)}`
-  )
-  const url = data.file?.trim()
-  if (!url) throw new ShortsApiError("No download URL returned", "no_download_url")
-  return {
-    url,
-    fallbackUrl: data.reserved_file?.trim() || null,
-    mimeType: (data.mime ?? "video/mp4").replace(/\\\//g, "/"),
-  }
-}
+/** Download endpoints 目前不用 走浏览器下载 */
+// export async function getShortsDownloadLink(
+//   videoId: string,
+//   qualityId: string
+// ): Promise<DownloadLink> {
+//   const data = await rapidGet<RawDownload>(
+//     `/download_short/${encodeURIComponent(videoId)}?quality=${encodeURIComponent(qualityId)}`
+//   )
+//   const url = data.file?.trim()
+//   if (!url) throw new ShortsApiError("No download URL returned", "no_download_url")
+//   return {
+//     url,
+//     fallbackUrl: data.reserved_file?.trim() || null,
+//     mimeType: (data.mime ?? "video/mp4").replace(/\\\//g, "/"),
+//   }
+// }
 
 export async function getVideoDownloadLink(
   videoId: string,

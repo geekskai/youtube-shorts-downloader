@@ -10,7 +10,7 @@ import {
   HOME_LAST_MODIFIED_ISO,
   generateHomeFAQSchema,
   generateHomeHowToSchema,
-} from "@/lib/seo/home-faq"
+} from "@/app/[locale]/home-faq"
 
 export const revalidate = 86400 // 24 hours
 

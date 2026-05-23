@@ -23,7 +23,7 @@ import {
   type DownloaderApiErrorCode,
 } from "@/components/downloader/shared"
 import { useDownloadRetryCooldown } from "@/components/downloader/useDownloadRetryCooldown"
-import { parseYouTubeUrl } from "@/lib/youtube/parse-url"
+import { parseYouTubeUrl } from "@/utils/parse-url"
 
 type VideoPreview = {
   videoId: string
@@ -45,6 +45,8 @@ const VIDEO_QUALITY_OPTIONS = [
 
 const DEFAULT_VIDEO_QUALITY = "247"
 const VIDEO_QUALITY_LABEL = VIDEO_QUALITY_OPTIONS.map((q) => q.label).join(" / ")
+const PROGRESS_DURATION_MS = 60_000
+const PROGRESS_TICK_MS = 200
 function buildShortsDownloaderHref(shortsUrl: string): string {
   return `/?url=${encodeURIComponent(shortsUrl.trim())}`
 }
@@ -266,15 +268,12 @@ export default function VideoDownloader({
 
   const startProgressSimulation = useCallback(() => {
     stopProgressSimulation()
+    const startedAt = Date.now()
     progressTimerRef.current = window.setInterval(() => {
-      setDownloadProgress((prev) => {
-        if (prev >= 99) return 99
-        if (prev < 25) return Math.min(prev + 4, 99)
-        if (prev < 55) return Math.min(prev + 2, 99)
-        if (prev < 85) return Math.min(prev + 1, 99)
-        return Math.min(prev + (Math.random() < 0.32 ? 1 : 0), 99)
-      })
-    }, 180)
+      const elapsed = Date.now() - startedAt
+      const next = Math.min(99, Math.floor((elapsed / PROGRESS_DURATION_MS) * 99))
+      setDownloadProgress(next)
+    }, PROGRESS_TICK_MS)
   }, [stopProgressSimulation])
 
   const resetDownloadState = useCallback(() => {
@@ -397,24 +396,6 @@ export default function VideoDownloader({
         url: fileUrl,
         method: "GET",
         responseType: "blob",
-        onDownloadProgress: (progressEvent) => {
-          const total = progressEvent.total
-          if (typeof total === "number" && Number.isFinite(total) && total > 0) {
-            const actualPct = Math.round((progressEvent.loaded / total) * 100)
-            if (actualPct >= 100 || progressEvent.loaded >= total) return
-            setDownloadProgress((prev) => {
-              const guidedPct = actualPct < 25 ? actualPct + 8 : actualPct + 4
-              return Math.min(99, Math.max(prev, guidedPct, 12))
-            })
-            return
-          }
-
-          if (typeof progressEvent.progress === "number") {
-            const actualPct = Math.round(progressEvent.progress * 100)
-            if (actualPct >= 100) return
-            setDownloadProgress((prev) => Math.min(99, Math.max(prev, actualPct + 4, 12)))
-          }
-        },
       })
 
       const contentType = String(response.headers["content-type"] || "")

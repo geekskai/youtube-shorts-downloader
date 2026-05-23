@@ -19,7 +19,7 @@ import {
   mapDownloaderApiError,
   type DownloaderApiErrorCode,
 } from "@/components/downloader/shared"
-import { parseYouTubeVideoId } from "@/lib/youtube/parse-url"
+import { parseYouTubeVideoId } from "@/utils/parse-url"
 
 type VideoPreview = {
   videoId: string

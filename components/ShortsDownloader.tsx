@@ -26,7 +26,7 @@ import {
   type DownloaderApiErrorCode,
 } from "@/components/downloader/shared"
 import { useDownloadRetryCooldown } from "@/components/downloader/useDownloadRetryCooldown"
-import { parseYouTubeUrl } from "@/lib/youtube/parse-url"
+import { parseYouTubeUrl } from "@/utils/parse-url"
 
 type VideoPreview = {
   videoId: string
@@ -63,6 +63,8 @@ const RAPIDAPI_HOST = "youtube-shorts-video-downloader-and-converter.p.rapidapi.
 const DEFAULT_SHORTS_QUALITY = "360p"
 const SHORTS_QUALITY_OPTIONS = ["144p", "240p", "360p", "480p", "720p", "1080p"] as const
 const SHORTS_QUALITY_LABEL = SHORTS_QUALITY_OPTIONS.join(" / ")
+const PROGRESS_DURATION_MS = 60_000
+const PROGRESS_TICK_MS = 200
 const DAILY_QUOTA_STORAGE_KEY = "shorts_downloader_daily_quota_v1"
 const DAILY_FREE_LIMIT = 3
 const SHARE_BONUS_CLICKS = 3
@@ -436,15 +438,12 @@ export default function ShortsDownloader({
 
   const startProgressSimulation = useCallback(() => {
     stopProgressSimulation()
+    const startedAt = Date.now()
     progressTimerRef.current = window.setInterval(() => {
-      setDownloadProgress((prev) => {
-        if (prev >= 99) return 99
-        if (prev < 25) return Math.min(prev + 4, 99)
-        if (prev < 55) return Math.min(prev + 2, 99)
-        if (prev < 85) return Math.min(prev + 1, 99)
-        return Math.min(prev + (Math.random() < 0.32 ? 1 : 0), 99)
-      })
-    }, 180)
+      const elapsed = Date.now() - startedAt
+      const next = Math.min(99, Math.floor((elapsed / PROGRESS_DURATION_MS) * 99))
+      setDownloadProgress(next)
+    }, PROGRESS_TICK_MS)
   }, [stopProgressSimulation])
 
   const resetDownloadState = useCallback(() => {
@@ -607,24 +606,6 @@ export default function ShortsDownloader({
         headers: {
           "x-rapidapi-host": RAPIDAPI_HOST,
           "x-rapidapi-key": process.env.NEXT_PUBLIC_RAPIDAPI_KEY_SHORTS,
-        },
-        onDownloadProgress: (progressEvent) => {
-          const total = progressEvent.total
-          if (typeof total === "number" && Number.isFinite(total) && total > 0) {
-            const actualPct = Math.round((progressEvent.loaded / total) * 100)
-            if (actualPct >= 100 || progressEvent.loaded >= total) return
-            setDownloadProgress((prev) => {
-              const guidedPct = actualPct < 25 ? actualPct + 8 : actualPct + 4
-              return Math.min(99, Math.max(prev, guidedPct, 12))
-            })
-            return
-          }
-
-          if (typeof progressEvent.progress === "number") {
-            const actualPct = Math.round(progressEvent.progress * 100)
-            if (actualPct >= 100) return
-            setDownloadProgress((prev) => Math.min(99, Math.max(prev, actualPct + 4, 12)))
-          }
         },
       })
       const contentType = String(response.headers["content-type"] || "")
