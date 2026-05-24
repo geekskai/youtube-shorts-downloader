@@ -385,7 +385,7 @@
   "ShortsDownloader": {
     "input_label": "YouTube Shorts URL",
     "input_placeholder": "Paste YouTube Shorts link (e.g. youtube.com/shorts/...)",
-    "button_fetch": "Get Video",
+    "button_fetch": "Get Shorts",
     "button_paste": "Paste",
     "button_download": "Download MP4",
     "loading": "Fetching video info...",
@@ -427,7 +427,7 @@
   "ShortsDownloaderWebm": {
     "input_label": "YouTube Shorts URL",
     "input_placeholder": "Paste YouTube Shorts link (e.g. youtube.com/shorts/...)",
-    "button_fetch": "Get Video",
+    "button_fetch": "Get Shorts",
     "button_paste": "Paste",
     "button_download": "Download WebM",
     "loading": "Fetching video info...",
