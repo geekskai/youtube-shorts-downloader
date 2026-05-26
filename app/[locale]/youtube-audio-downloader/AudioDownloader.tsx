@@ -300,7 +300,7 @@ export default function AudioDownloader({
           </div>
         </div>
 
-        <p className="mt-2 text-center text-xs leading-relaxed text-slate-500 md:text-left">
+        <p className="mt-2 text-center text-sm leading-relaxed text-cyan-500 md:text-left md:text-base">
           {t("hint")}
         </p>
       </form>

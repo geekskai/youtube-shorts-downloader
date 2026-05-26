@@ -551,7 +551,7 @@ export default function VideoDownloader({
           </div>
         </div>
 
-        <p className="mt-2 text-center text-[11px] leading-relaxed text-green-500 md:mt-2.5 md:text-left md:text-base">
+        <p className="mt-2 text-center text-sm leading-relaxed text-blue-500 md:mt-2.5 md:text-left md:text-base">
           {t("hint", { qualities: VIDEO_QUALITY_LABEL })}
         </p>
       </form>
