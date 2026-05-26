@@ -48,23 +48,8 @@ export const SHORTS_TO_WEBM_FAQ_ITEMS: ShortsToWebmFaqItem[] = [
   },
 ]
 
-export const SHORTS_TO_WEBM_LAST_MODIFIED = "2026-05-24"
+export const SHORTS_TO_WEBM_LAST_MODIFIED = "2026-05-27"
 export const SHORTS_TO_WEBM_LAST_MODIFIED_ISO = `${SHORTS_TO_WEBM_LAST_MODIFIED}T12:00:00.000Z`
-
-export function generateShortsToWebmFAQSchema(baseUrl: string) {
-  return {
-    "@type": "FAQPage",
-    "@id": `${baseUrl}#faq`,
-    mainEntity: SHORTS_TO_WEBM_FAQ_ITEMS.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
-  }
-}
 
 export function generateShortsToWebmHowToSchema(baseUrl: string) {
   return {

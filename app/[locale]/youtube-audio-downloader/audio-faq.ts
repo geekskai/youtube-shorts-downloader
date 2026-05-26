@@ -28,7 +28,7 @@ export const AUDIO_FAQ_ITEMS: AudioFaqItem[] = [
   },
 ]
 
-export const AUDIO_LAST_MODIFIED = "2026-05-17"
+export const AUDIO_LAST_MODIFIED = "2026-05-27"
 
 export function generateAudioFAQSchema(baseUrl: string) {
   return {
@@ -42,35 +42,5 @@ export function generateAudioFAQSchema(baseUrl: string) {
         text: item.answer,
       },
     })),
-  }
-}
-
-export function generateAudioHowToSchema(baseUrl: string) {
-  return {
-    "@type": "HowTo",
-    "@id": `${baseUrl}#howto`,
-    name: "How to download YouTube audio",
-    description:
-      "Extract audio from any public YouTube video using the browser-based downloader in three steps.",
-    step: [
-      {
-        "@type": "HowToStep",
-        position: 1,
-        name: "Copy the video link",
-        text: "Open the video on YouTube and copy the share link from the app or browser.",
-      },
-      {
-        "@type": "HowToStep",
-        position: 2,
-        name: "Paste and fetch audio",
-        text: "Paste the URL into the downloader and click Get Audio to load available bitrates.",
-      },
-      {
-        "@type": "HowToStep",
-        position: 3,
-        name: "Download audio",
-        text: "Select your preferred quality and click Download to save the audio file.",
-      },
-    ],
   }
 }

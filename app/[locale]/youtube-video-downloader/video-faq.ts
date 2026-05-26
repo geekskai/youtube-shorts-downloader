@@ -48,7 +48,7 @@ export const VIDEO_FAQ_ITEMS: VideoFaqItem[] = [
   },
 ]
 
-export const VIDEO_LAST_MODIFIED = "2026-05-23"
+export const VIDEO_LAST_MODIFIED = "2026-05-27"
 export const VIDEO_LAST_MODIFIED_ISO = `${VIDEO_LAST_MODIFIED}T12:00:00.000Z`
 
 export function generateVideoFAQSchema(baseUrl: string) {
@@ -63,35 +63,5 @@ export function generateVideoFAQSchema(baseUrl: string) {
         text: item.answer,
       },
     })),
-  }
-}
-
-export function generateVideoHowToSchema(baseUrl: string) {
-  return {
-    "@type": "HowTo",
-    "@id": `${baseUrl}#howto`,
-    name: "How to Download YouTube Videos",
-    description:
-      "Download any public YouTube video as an HD MP4 file using the free online video downloader in three steps.",
-    step: [
-      {
-        "@type": "HowToStep",
-        position: 1,
-        name: "Copy the video link",
-        text: "Open the video on YouTube and copy the share link from the app or browser.",
-      },
-      {
-        "@type": "HowToStep",
-        position: 2,
-        name: "Paste the link",
-        text: "Paste the URL into the downloader and click Get Video to load available qualities.",
-      },
-      {
-        "@type": "HowToStep",
-        position: 3,
-        name: "Download MP4 in HD",
-        text: "Select quality up to 1080p and click Download MP4 to save the file to your device.",
-      },
-    ],
   }
 }

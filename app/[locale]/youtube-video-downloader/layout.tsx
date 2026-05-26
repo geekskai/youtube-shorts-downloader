@@ -3,7 +3,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import {
   VIDEO_LAST_MODIFIED_ISO,
   generateVideoFAQSchema,
-  generateVideoHowToSchema,
 } from "@/app/[locale]/youtube-video-downloader/video-faq"
 
 type Props = {
@@ -111,7 +110,6 @@ export default async function YouTubeVideoDownloaderLayout({ children, params }:
         },
       },
       generateVideoFAQSchema(url),
-      generateVideoHowToSchema(url),
     ],
   }
 

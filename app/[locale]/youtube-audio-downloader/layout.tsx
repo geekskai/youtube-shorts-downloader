@@ -3,7 +3,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import {
   AUDIO_LAST_MODIFIED,
   generateAudioFAQSchema,
-  generateAudioHowToSchema,
 } from "@/app/[locale]/youtube-audio-downloader/audio-faq"
 
 type Props = {
@@ -111,7 +110,6 @@ export default async function YouTubeAudioDownloaderLayout({ children, params }:
         },
       },
       generateAudioFAQSchema(url),
-      generateAudioHowToSchema(url),
     ],
   }
 

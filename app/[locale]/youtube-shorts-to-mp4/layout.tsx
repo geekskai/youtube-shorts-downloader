@@ -3,7 +3,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 import {
   SHORTS_TO_MP4_LAST_MODIFIED_ISO,
   generateShortsToMp4FAQSchema,
-  generateShortsToMp4HowToSchema,
 } from "@/app/[locale]/youtube-shorts-to-mp4/shorts-to-mp4-faq"
 
 type Props = {
@@ -111,7 +110,6 @@ export default async function YouTubeShortsToMp4Layout({ children, params }: Pro
         },
       },
       generateShortsToMp4FAQSchema(url),
-      generateShortsToMp4HowToSchema(url),
     ],
   }
 

@@ -48,7 +48,7 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
   },
 ]
 
-export const HOME_LAST_MODIFIED = "2026-05-23"
+export const HOME_LAST_MODIFIED = "2026-05-27"
 export const HOME_LAST_MODIFIED_ISO = `${HOME_LAST_MODIFIED}T12:00:00.000Z`
 
 export function generateHomeFAQSchema(baseUrl: string) {
@@ -63,35 +63,5 @@ export function generateHomeFAQSchema(baseUrl: string) {
         text: item.answer,
       },
     })),
-  }
-}
-
-export function generateHomeHowToSchema(baseUrl: string) {
-  return {
-    "@type": "HowTo",
-    "@id": `${baseUrl}#howto`,
-    name: "How to Download YouTube Shorts",
-    description:
-      "Download any YouTube Short as an HD MP4 file using YoutubeShortDownloader in three steps — copy, paste, download.",
-    step: [
-      {
-        "@type": "HowToStep",
-        position: 1,
-        name: "Copy the Shorts URL",
-        text: "Open the Short on YouTube and copy the share link from the app or browser.",
-      },
-      {
-        "@type": "HowToStep",
-        position: 2,
-        name: "Paste the link",
-        text: "Paste the URL into YoutubeShortDownloader and click Get Video to load available qualities.",
-      },
-      {
-        "@type": "HowToStep",
-        position: 3,
-        name: "Download HD MP4 instantly",
-        text: "Select quality up to 1080p and click Download MP4 to save the file to your device.",
-      },
-    ],
   }
 }
