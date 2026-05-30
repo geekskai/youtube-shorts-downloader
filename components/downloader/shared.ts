@@ -23,6 +23,17 @@ export function getDownloaderErrorMessage(
   return t(MESSAGE_KEY_BY_ERROR[errorCode])
 }
 
+export function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
+
+export function sanitizeFileName(name: string, fallback: string): string {
+  const normalized = name.trim().replace(/[\\/:*?"<>|]+/g, "_")
+  return normalized || fallback
+}
+
 export async function parseJsonSafe(res: Response): Promise<Record<string, unknown>> {
   return res.json().catch(() => ({}))
 }

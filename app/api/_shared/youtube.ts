@@ -15,6 +15,7 @@ export const downloadQuerySchema = z.object({
 export function errorStatus(code: string): number {
   switch (code) {
     case "invalid_params":
+    case "invalid_url":
       return 400
     case "not_configured":
     case "api_not_configured":

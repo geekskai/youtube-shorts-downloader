@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "youtube-video-downloader",
     "youtube-audio-downloader",
+    "youtube-to-mp3",
     "youtube-shorts-to-mp4",
     "youtube-shorts-to-webm",
     "blog",

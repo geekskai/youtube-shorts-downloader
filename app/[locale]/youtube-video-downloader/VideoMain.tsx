@@ -35,6 +35,11 @@ const RELATED_TOOLS = [
     titleKey: "related_audio_title" as const,
     descKey: "related_audio_desc" as const,
   },
+  {
+    href: "/youtube-to-mp3",
+    titleKey: "related_mp3_title" as const,
+    descKey: "related_mp3_desc" as const,
+  },
 ] as const
 
 const HOW_TO_STEPS = ["howto_step_1", "howto_step_2", "howto_step_3"] as const

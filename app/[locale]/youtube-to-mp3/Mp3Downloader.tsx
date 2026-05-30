@@ -1,10 +1,10 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import axios from "axios"
 import {
   Download,
+  Music2,
   Link2,
   Loader2,
   AlertCircle,
@@ -14,7 +14,10 @@ import {
 } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
-import { useRouter } from "@/app/i18n/navigation"
+import {
+  downloadFileWithProgress,
+  isAudioContentType,
+} from "@/components/downloader/downloadFileWithProgress"
 import {
   fetchYouTubeMetadataClient,
   formatBytes,
@@ -23,11 +26,8 @@ import {
   sanitizeFileName,
   type DownloaderApiErrorCode,
 } from "@/components/downloader/shared"
-import {
-  downloadFileWithProgress,
-  isVideoContentType,
-} from "@/components/downloader/downloadFileWithProgress"
 import { useDownloadRetryCooldown } from "@/components/downloader/useDownloadRetryCooldown"
+import { fetchMp3DownloadUrl, Mp3ClientError } from "@/app/[locale]/youtube-to-mp3/mp3-download"
 import { parseYouTubeUrl } from "@/utils/parse-url"
 
 type VideoPreview = {
@@ -36,23 +36,10 @@ type VideoPreview = {
   thumbnail: string | null
   author: string | null
   durationSeconds: number | null
+  watchUrl: string
 }
 
-type ApiErrorCode = DownloaderApiErrorCode
-
-const VIDEO_QUALITY_OPTIONS = [
-  { label: "1080p", value: "137" },
-  { label: "720p", value: "247" },
-  { label: "480p", value: "135" },
-  { label: "360p", value: "134" },
-  { label: "240p", value: "133" },
-] as const
-
-const DEFAULT_VIDEO_QUALITY = "247"
-const VIDEO_QUALITY_LABEL = VIDEO_QUALITY_OPTIONS.map((q) => q.label).join(" / ")
-function buildShortsDownloaderHref(shortsUrl: string): string {
-  return `/?url=${encodeURIComponent(shortsUrl.trim())}`
-}
+type ApiErrorCode = DownloaderApiErrorCode | "mp3_api_not_configured"
 
 function formatDuration(seconds: number | null): string | null {
   if (seconds == null || seconds <= 0) return null
@@ -65,33 +52,37 @@ function formatDuration(seconds: number | null): string | null {
   return `${m}:${s.toString().padStart(2, "0")}`
 }
 
-function downloadHref(videoId: string, qualityId: string): string {
-  const q = new URLSearchParams({ videoId, quality: qualityId })
-  return `/api/video/download?${q}`
+function watchUrlFromVideoId(videoId: string): string {
+  return `https://www.youtube.com/watch?v=${videoId}`
 }
 
-type VideoDownloaderProps = {
+/** Map axios byte progress (0–99) into UI range after URL resolve (8–100). */
+function mapDownloadProgress(axiosPercent: number): number {
+  return Math.max(8, Math.min(100, Math.round(8 + axiosPercent * 0.92)))
+}
+
+type Mp3DownloaderProps = {
   variant?: "hero" | "default"
   autoFocus?: boolean
 }
 
 const BTN =
-  "inline-flex min-h-11 touch-manipulation items-center justify-center gap-2 rounded-xl px-4 text-[13px] font-semibold leading-none transition-[background-color,border-color,opacity] duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary-500/30 disabled:cursor-not-allowed disabled:opacity-45 md:min-h-12 md:text-sm"
+  "inline-flex min-h-11 touch-manipulation items-center justify-center gap-2 rounded-xl px-4 text-[13px] font-semibold leading-none transition-[background-color,border-color,opacity] duration-200 focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-500/30 disabled:cursor-not-allowed disabled:opacity-45 md:min-h-12 md:text-sm"
 
-type VideoDownloaderT = ReturnType<typeof useTranslations<"VideoDownloader">>
+type Mp3DownloaderT = ReturnType<typeof useTranslations<"Mp3Downloader">>
 
 type VideoResultCardProps = {
   video: VideoPreview
-  t: VideoDownloaderT
+  t: Mp3DownloaderT
 }
 
 function VideoResultCard({ video, t }: VideoResultCardProps) {
   const duration = formatDuration(video.durationSeconds)
 
   return (
-    <article className="overflow-hidden rounded-xl border border-primary-500/20 bg-gradient-to-br from-slate-950/90 via-slate-900/50 to-slate-950/90 md:rounded-2xl">
+    <article className="overflow-hidden rounded-xl border border-amber-500/20 bg-gradient-to-br from-slate-950/90 via-slate-900/50 to-slate-950/90 md:rounded-2xl">
       <header className="border-b border-white/10 px-3.5 py-2 md:px-4 md:py-2.5 lg:px-5">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary-400/35 bg-primary-500/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary-100 md:px-3 md:text-[11px]">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/35 bg-amber-500/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-amber-100 md:px-3 md:text-[11px]">
           <CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden />
           {t("ready")}
         </span>
@@ -120,7 +111,7 @@ function VideoResultCard({ video, t }: VideoResultCardProps) {
               className="flex h-[72px] w-[128px] shrink-0 items-center justify-center rounded-lg border border-dashed border-white/15 bg-slate-900/80 md:h-[84px] md:w-[150px] md:rounded-xl lg:h-[90px] lg:w-[160px]"
               aria-hidden
             >
-              <Download className="h-8 w-8 text-slate-600" />
+              <Music2 className="h-8 w-8 text-slate-600" />
             </div>
           )}
 
@@ -136,98 +127,19 @@ function VideoResultCard({ video, t }: VideoResultCardProps) {
           </div>
         </div>
 
-        <p className="mt-3 border-t border-white/10 pt-3 text-center text-xs leading-relaxed text-yellow-500 md:mt-4 md:pt-4 md:text-left md:text-base">
-          {t("download_note", { qualities: VIDEO_QUALITY_LABEL })}
+        <p className="mt-3 border-t border-white/10 pt-3 text-center text-xs leading-relaxed text-amber-200/90 md:mt-4 md:pt-4 md:text-left md:text-sm">
+          {t("download_note")}
         </p>
       </div>
     </article>
   )
 }
 
-type DownloadFeedbackProps = {
-  loading: boolean
-  downloading: boolean
-  errorMessage: string | null
-  errorExtra?: ReactNode
-  downloadError: string | null
-  downloadSuccess: string | null
-  downloadProgress: number
-  t: VideoDownloaderT
-}
-
-function DownloadFeedback({
-  loading,
-  downloading,
-  errorMessage,
-  errorExtra,
-  downloadError,
-  downloadSuccess,
-  downloadProgress,
-  t,
-}: DownloadFeedbackProps) {
-  return (
-    <div className="mb-3.5 md:mb-4" aria-live="polite" aria-busy={loading || downloading}>
-      {errorMessage ? (
-        <div
-          role="alert"
-          className="flex items-start gap-2.5 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-2.5 text-[13px] leading-5 text-orange-100 md:px-3.5 md:py-3 md:text-sm"
-        >
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-orange-300" aria-hidden />
-          <p>
-            {errorMessage}
-            {errorExtra}
-          </p>
-        </div>
-      ) : null}
-
-      {loading ? (
-        <p className="flex items-center justify-center gap-2 py-2 text-[13px] text-slate-400 md:text-sm">
-          <Loader2 className="h-4 w-4 animate-spin text-primary-400" aria-hidden />
-          {t("loading")}
-        </p>
-      ) : null}
-
-      {downloading ? (
-        <div className="mt-2 rounded-xl border border-primary-500/25 bg-primary-500/10 px-3 py-2.5 md:px-3.5 md:py-3">
-          <div className="mb-1.5 flex items-center justify-between text-xs text-slate-300">
-            <span>{t("download_progress_label")}</span>
-            <span>{downloadProgress}%</span>
-          </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800/80">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-primary-500 to-cyan-400 transition-[width] duration-300"
-              style={{ width: `${downloadProgress}%` }}
-            />
-          </div>
-        </div>
-      ) : null}
-
-      {downloadError ? (
-        <div
-          role="alert"
-          className="mt-2 flex items-start gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-[13px] leading-5 text-rose-100 md:px-3.5 md:py-3 md:text-sm"
-        >
-          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300" aria-hidden />
-          <p>{downloadError}</p>
-        </div>
-      ) : null}
-
-      {downloadSuccess ? (
-        <div className="mt-2 flex items-start gap-2.5 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3 py-2.5 text-[13px] leading-5 text-emerald-100 md:px-3.5 md:py-3 md:text-sm">
-          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" aria-hidden />
-          <p>{downloadSuccess}</p>
-        </div>
-      ) : null}
-    </div>
-  )
-}
-
-export default function VideoDownloader({
+export default function Mp3Downloader({
   variant = "default",
   autoFocus = false,
-}: VideoDownloaderProps) {
-  const t = useTranslations("VideoDownloader")
-  const router = useRouter()
+}: Mp3DownloaderProps) {
+  const t = useTranslations("Mp3Downloader")
   const searchParams = useSearchParams()
   const inputRef = useRef<HTMLInputElement>(null)
   const initializedFromQuery = useRef(false)
@@ -235,7 +147,6 @@ export default function VideoDownloader({
   const [loading, setLoading] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const [downloadProgress, setDownloadProgress] = useState(0)
-  const [quality, setQuality] = useState<string>(DEFAULT_VIDEO_QUALITY)
   const [errorKey, setErrorKey] = useState<ApiErrorCode | null>(null)
   const [downloadError, setDownloadError] = useState<string | null>(null)
   const [downloadSuccess, setDownloadSuccess] = useState<string | null>(null)
@@ -270,27 +181,23 @@ export default function VideoDownloader({
       setVideo(null)
 
       const parsed = parseYouTubeUrl(trimmed)
-      if (parsed?.kind === "shorts") {
-        router.push(buildShortsDownloaderHref(trimmed))
+      if (!parsed || (parsed.kind !== "video" && parsed.kind !== "shorts")) {
+        setErrorKey("invalid_url")
         return
       }
 
       setLoading(true)
 
       try {
-        const videoId = parsed?.kind === "video" ? parsed.videoId : null
-        if (!videoId) {
-          setErrorKey("invalid_url")
-          return
-        }
-
-        const metadata = await fetchYouTubeMetadataClient(videoId, "YouTube Video")
+        const videoId = parsed.videoId
+        const metadata = await fetchYouTubeMetadataClient(videoId, "YouTube MP3")
         setVideo({
           videoId: metadata.videoId,
           title: metadata.title,
           thumbnail: metadata.thumbnail,
           author: metadata.author,
           durationSeconds: metadata.durationSeconds,
+          watchUrl: trimmed.includes("youtube") ? trimmed : watchUrlFromVideoId(videoId),
         })
       } catch (error) {
         setErrorKey(mapDownloaderApiError(error instanceof Error ? error.message : undefined))
@@ -298,7 +205,7 @@ export default function VideoDownloader({
         setLoading(false)
       }
     },
-    [resetDownloadState, router, url]
+    [resetDownloadState, url]
   )
 
   useEffect(() => {
@@ -306,7 +213,7 @@ export default function VideoDownloader({
     const incoming = searchParams.get("url")?.trim()
     if (!incoming) return
     const parsed = parseYouTubeUrl(incoming)
-    if (parsed?.kind !== "video") return
+    if (!parsed || (parsed.kind !== "video" && parsed.kind !== "shorts")) return
     initializedFromQuery.current = true
     setUrl(incoming)
     void fetchVideo(incoming)
@@ -323,10 +230,6 @@ export default function VideoDownloader({
       const text = await navigator.clipboard.readText()
       const trimmed = text.trim()
       if (!trimmed) return
-      if (parseYouTubeUrl(trimmed)?.kind === "shorts") {
-        router.push(buildShortsDownloaderHref(trimmed))
-        return
-      }
       setUrl(trimmed)
       resetPreviewState()
       inputRef.current?.focus()
@@ -342,35 +245,18 @@ export default function VideoDownloader({
     setDownloadError(null)
     setDownloadSuccess(null)
     setDownloading(true)
-    setDownloadProgress(0)
+    setDownloadProgress(2)
 
     try {
-      setDownloadProgress(3)
-      const initRes = await fetch(downloadHref(selectedVideo.videoId, quality), {
-        redirect: "manual",
-        cache: "no-store",
-      })
+      const fileUrl = await fetchMp3DownloadUrl(selectedVideo.watchUrl)
+      setDownloadProgress(8)
 
-      if (initRes.status !== 302) {
-        const body = (await initRes.json().catch(() => ({}))) as {
-          error?: string
-          message?: string
-        }
-        throw new Error(body.message || body.error || `Download failed (${initRes.status})`)
-      }
-
-      const fileUrl = initRes.headers.get("Location")
-      if (!fileUrl) {
-        throw new Error("No download URL returned")
-      }
-
-      setDownloadProgress(6)
-      const fileName = `${sanitizeFileName(selectedVideo.title, "youtube-video")}.mp4`
+      const fileName = `${sanitizeFileName(selectedVideo.title, "youtube-audio")}.mp3`
       const { size } = await downloadFileWithProgress({
         url: fileUrl,
         fileName,
-        onProgress: setDownloadProgress,
-        isValidContentType: isVideoContentType,
+        onProgress: (axiosPercent) => setDownloadProgress(mapDownloadProgress(axiosPercent)),
+        isValidContentType: isAudioContentType,
       })
 
       setDownloadSuccess(
@@ -382,14 +268,12 @@ export default function VideoDownloader({
       setVideo(null)
     } catch (error) {
       setDownloadProgress(0)
-      const message = axios.isAxiosError(error)
-        ? error.response?.data?.message ||
-          error.response?.statusText ||
-          error.message ||
-          t("error_download_failed")
-        : error instanceof Error
-          ? error.message
-          : t("error_download_failed")
+      const message =
+        error instanceof Mp3ClientError && error.code === "not_configured"
+          ? t("error_mp3_api_not_configured")
+          : error instanceof Error
+            ? error.message
+            : t("error_download_failed")
       setDownloadError(`${t("error_download_failed")} (${message})`)
       startCooldown()
     } finally {
@@ -397,12 +281,18 @@ export default function VideoDownloader({
     }
   }
 
+  const getErrorMessage = (code: ApiErrorCode | null) => {
+    if (!code) return null
+    if (code === "mp3_api_not_configured") return t("error_mp3_api_not_configured")
+    return getDownloaderErrorMessage(t, code)
+  }
+
   const isHero = variant === "hero"
   const shellClass = isHero
     ? "w-full rounded-xl border border-white/10 bg-slate-900/50 p-3.5 backdrop-blur-sm md:rounded-2xl md:p-5 lg:p-6"
     : "mx-auto w-full max-w-2xl rounded-xl border border-white/10 bg-slate-900/50 p-3.5 backdrop-blur-sm md:max-w-3xl md:rounded-2xl md:p-6 lg:max-w-4xl lg:p-8"
 
-  const errorMessage = getDownloaderErrorMessage(t, errorKey)
+  const errorMessage = getErrorMessage(errorKey)
   const canDownload = Boolean(video)
   const downloadButtonLabel = downloading
     ? t("downloading")
@@ -418,22 +308,63 @@ export default function VideoDownloader({
         </div>
       ) : null}
 
-      <DownloadFeedback
-        loading={loading}
-        downloading={downloading}
-        errorMessage={errorMessage}
-        downloadError={downloadError}
-        downloadSuccess={downloadSuccess}
-        downloadProgress={downloadProgress}
-        t={t}
-      />
+      <div className="mb-3.5 md:mb-4" aria-live="polite" aria-busy={loading || downloading}>
+        {errorMessage ? (
+          <div
+            role="alert"
+            className="flex items-start gap-2.5 rounded-xl border border-orange-500/30 bg-orange-500/10 px-3 py-2.5 text-[13px] leading-5 text-orange-100 md:px-3.5 md:py-3 md:text-sm"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-orange-300" aria-hidden />
+            <p>{errorMessage}</p>
+          </div>
+        ) : null}
+
+        {loading ? (
+          <p className="flex items-center justify-center gap-2 py-2 text-[13px] text-slate-400 md:text-sm">
+            <Loader2 className="h-4 w-4 animate-spin text-amber-400" aria-hidden />
+            {t("loading")}
+          </p>
+        ) : null}
+
+        {downloading ? (
+          <div className="mt-2 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2.5 md:px-3.5 md:py-3">
+            <div className="mb-1.5 flex items-center justify-between text-xs text-slate-300">
+              <span>{t("download_progress_label")}</span>
+              <span>{downloadProgress}%</span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800/80">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-400 transition-[width] duration-300"
+                style={{ width: `${downloadProgress}%` }}
+              />
+            </div>
+          </div>
+        ) : null}
+
+        {downloadError ? (
+          <div
+            role="alert"
+            className="mt-2 flex items-start gap-2.5 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2.5 text-[13px] leading-5 text-rose-100 md:px-3.5 md:py-3 md:text-sm"
+          >
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300" aria-hidden />
+            <p>{downloadError}</p>
+          </div>
+        ) : null}
+
+        {downloadSuccess ? (
+          <div className="mt-2 flex items-start gap-2.5 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3 py-2.5 text-[13px] leading-5 text-emerald-100 md:px-3.5 md:py-3 md:text-sm">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" aria-hidden />
+            <p>{downloadSuccess}</p>
+          </div>
+        ) : null}
+      </div>
 
       <form onSubmit={handleSubmit}>
-        <label htmlFor="video-url" className="sr-only">
+        <label htmlFor="mp3-url" className="sr-only">
           {t("input_label")}
         </label>
 
-        <div className="grid grid-cols-1 gap-2.5 md:grid-cols-[minmax(0,1fr)_150px_auto] md:items-stretch md:gap-3 lg:grid-cols-[minmax(0,1fr)_170px_auto] lg:gap-4">
+        <div className="flex flex-col gap-2.5 md:flex-row md:items-stretch md:gap-3">
           <div className="relative min-w-0 flex-1">
             <Link2
               className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-500"
@@ -441,7 +372,7 @@ export default function VideoDownloader({
             />
             <input
               ref={inputRef}
-              id="video-url"
+              id="mp3-url"
               type="url"
               inputMode="url"
               autoComplete="off"
@@ -452,22 +383,8 @@ export default function VideoDownloader({
                 setUrl(e.target.value)
                 resetPreviewState()
               }}
-              className="w-full rounded-xl border border-white/15 bg-slate-950/60 py-3 pl-10 pr-3 text-[15px] leading-6 text-slate-100 transition-[border-color,box-shadow] duration-200 placeholder:text-slate-500 focus:border-primary-400/60 focus:outline-none focus:ring-4 focus:ring-primary-500/20 md:min-h-12 md:py-3.5 md:pl-11 md:pr-4 md:text-base"
+              className="w-full rounded-xl border border-white/15 bg-slate-950/60 py-3 pl-10 pr-3 text-[15px] leading-6 text-slate-100 transition-[border-color,box-shadow] duration-200 placeholder:text-slate-500 focus:border-amber-400/60 focus:outline-none focus:ring-4 focus:ring-amber-500/20 md:min-h-12 md:py-3.5 md:pl-11 md:pr-4 md:text-base"
             />
-          </div>
-
-          <div className="relative min-w-0">
-            <select
-              value={quality}
-              onChange={(e) => setQuality(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-slate-950/60 py-3 pl-3 pr-3 text-[14px] text-slate-100 transition-[border-color,box-shadow] duration-200 focus:border-primary-400/60 focus:outline-none focus:ring-4 focus:ring-primary-500/20 md:min-h-12 md:py-3.5 md:text-sm"
-            >
-              {VIDEO_QUALITY_OPTIONS.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
           </div>
 
           <div className="flex flex-col gap-2 md:shrink-0 md:flex-row md:items-stretch md:gap-2">
@@ -476,7 +393,7 @@ export default function VideoDownloader({
                 type="button"
                 onClick={() => void handleDownload()}
                 disabled={downloading || isDownloadCooldown}
-                className={`${BTN} order-1 w-full bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-900/30 hover:brightness-110 md:order-2 md:min-w-[136px] lg:min-w-[148px]`}
+                className={`${BTN} order-1 w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-900/30 hover:brightness-110 md:order-2 md:min-w-[136px] lg:min-w-[148px]`}
               >
                 {downloading ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -489,7 +406,7 @@ export default function VideoDownloader({
               <button
                 type="submit"
                 disabled={loading || !url.trim()}
-                className={`${BTN} order-1 w-full bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-900/30 hover:brightness-110 md:order-2 md:min-w-[136px] lg:min-w-[148px]`}
+                className={`${BTN} order-1 w-full bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg shadow-amber-900/30 hover:brightness-110 md:order-2 md:min-w-[136px] lg:min-w-[148px]`}
               >
                 {loading ? (
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
@@ -502,7 +419,7 @@ export default function VideoDownloader({
             <button
               type="button"
               onClick={() => void handlePaste()}
-              className={`${BTN} order-2 w-full border border-white/15 bg-slate-800/50 font-medium text-slate-200 hover:border-primary-400/40 hover:bg-slate-800 md:order-1 md:w-auto`}
+              className={`${BTN} order-2 w-full border border-white/15 bg-slate-800/50 font-medium text-slate-200 hover:border-amber-400/40 hover:bg-slate-800 md:order-1 md:w-auto`}
             >
               <ClipboardPaste className="h-4 w-4" aria-hidden />
               {t("button_paste")}
@@ -510,8 +427,8 @@ export default function VideoDownloader({
           </div>
         </div>
 
-        <p className="mt-2 text-center text-sm leading-relaxed text-blue-500 md:mt-2.5 md:text-left md:text-base">
-          {t("hint", { qualities: VIDEO_QUALITY_LABEL })}
+        <p className="mt-2 text-center text-sm leading-relaxed text-amber-300/90 md:mt-2.5 md:text-left md:text-base">
+          {t("hint")}
         </p>
       </form>
 
@@ -522,7 +439,7 @@ export default function VideoDownloader({
               key={key}
               className="flex items-start gap-2.5 sm:flex-col sm:items-center sm:px-3 sm:text-center"
             >
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-500/20 text-[11px] font-bold text-primary-200">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-[11px] font-bold text-amber-200">
                 {i + 1}
               </span>
               <span className="text-xs leading-snug text-slate-400 sm:text-[13px] md:text-sm">

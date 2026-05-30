@@ -28,6 +28,24 @@ export const gradients = {
 
 export const toolsData: ToolData[] = [
   {
+    id: "youtube-to-mp3",
+    title: "YouTube to MP3 Online",
+    description:
+      "YouTube to MP3 online with up to 320 kbps quality. Works on iPhone Safari—paste a link and download MP3 free.",
+    icon: Download,
+    href: "/youtube-to-mp3",
+    features: [
+      "Paste any public YouTube URL",
+      "Download standard MP3 audio",
+      "No account or subscription required",
+      "Mobile-friendly browser workflow",
+    ],
+    badge: "MP3",
+    badgeColor: "bg-amber-500",
+    gradient: gradients.entertainment,
+    category: "Downloader",
+  },
+  {
     id: "youtube-audio-downloader",
     title: "YouTube Audio Downloader",
     description:

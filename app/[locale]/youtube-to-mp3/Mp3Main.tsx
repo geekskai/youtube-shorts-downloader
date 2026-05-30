@@ -1,44 +1,41 @@
-import AudioDownloader from "@/app/[locale]/youtube-audio-downloader/AudioDownloader"
-import {
-  AUDIO_FAQ_ITEMS,
-  AUDIO_LAST_MODIFIED,
-} from "@/app/[locale]/youtube-audio-downloader/audio-faq"
+import Mp3Downloader from "@/app/[locale]/youtube-to-mp3/Mp3Downloader"
+import { MP3_FAQ_ITEMS, MP3_LAST_MODIFIED } from "@/app/[locale]/youtube-to-mp3/mp3-faq"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
-import { Shield, Zap, Smartphone, Music } from "lucide-react"
+import { Shield, Zap, Smartphone, Music2 } from "lucide-react"
 
 const CORE_FACTS = [
   {
     icon: Zap,
     labelKey: "fact_instant_label" as const,
     detailKey: "fact_instant_detail" as const,
-    border: "border-emerald-500/25",
-    bg: "bg-emerald-500/10",
-    labelColor: "text-emerald-200",
+    border: "border-amber-500/25",
+    bg: "bg-amber-500/10",
+    labelColor: "text-amber-200",
   },
   {
     icon: Shield,
     labelKey: "fact_free_label" as const,
     detailKey: "fact_free_detail" as const,
-    border: "border-violet-500/25",
-    bg: "bg-violet-500/10",
-    labelColor: "text-violet-200",
+    border: "border-orange-500/25",
+    bg: "bg-orange-500/10",
+    labelColor: "text-orange-200",
   },
   {
-    icon: Music,
+    icon: Music2,
     labelKey: "fact_format_label" as const,
     detailKey: "fact_format_detail" as const,
-    border: "border-teal-500/25",
-    bg: "bg-teal-500/10",
-    labelColor: "text-teal-200",
+    border: "border-yellow-500/25",
+    bg: "bg-yellow-500/10",
+    labelColor: "text-yellow-200",
   },
   {
     icon: Smartphone,
     labelKey: "fact_device_label" as const,
     detailKey: "fact_device_detail" as const,
-    border: "border-purple-500/25",
-    bg: "bg-purple-500/10",
-    labelColor: "text-purple-200",
+    border: "border-amber-500/25",
+    bg: "bg-amber-500/10",
+    labelColor: "text-amber-200",
   },
 ] as const
 
@@ -48,7 +45,7 @@ const SECTION = "mx-auto w-full max-w-7xl px-4 sm:px-6"
 const SECTION_PY = "py-8 md:py-11 lg:py-14"
 
 const TYPE = {
-  badge: "text-xs font-semibold uppercase tracking-[0.12em] text-emerald-200",
+  badge: "text-xs font-semibold uppercase tracking-[0.12em] text-amber-200",
   h1: "text-[1.75rem] font-bold leading-[1.2] tracking-tight text-transparent md:text-4xl md:leading-tight lg:text-5xl",
   h2: "text-xl font-semibold leading-snug text-white md:text-2xl lg:text-[1.75rem] lg:leading-snug",
   sectionIntro: "text-sm leading-7 text-slate-300 md:text-base md:leading-7 lg:max-w-3xl",
@@ -58,19 +55,19 @@ const TYPE = {
   factLabel: "text-xs font-semibold uppercase tracking-[0.12em]",
   factDetail: "text-sm leading-6 text-slate-300 md:leading-7",
   stepNum:
-    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-sm font-bold text-emerald-200 md:h-11 md:w-11 md:text-base",
+    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/20 text-sm font-bold text-amber-200 md:h-11 md:w-11 md:text-base",
   stepTitle: "text-sm font-semibold leading-snug text-slate-100 md:text-base",
   stepBody: "text-sm leading-7 text-slate-400 md:text-[15px] md:leading-7",
   faqQuestion: "text-sm font-semibold leading-snug text-slate-100 md:text-base",
   faqAnswer: "text-sm leading-7 text-slate-400 md:text-base md:leading-7",
-  link: "text-sm font-medium text-emerald-300 transition hover:text-emerald-200 md:text-base",
+  link: "text-sm font-medium text-amber-300 transition hover:text-amber-200 md:text-base",
 } as const
 
 const sectionHeaderCenter = "text-center md:text-left"
 const sectionHeaderStack = "text-center"
 
-export default function AudioMain() {
-  const t = useTranslations("AudioPage")
+export default function Mp3Main() {
+  const t = useTranslations("Mp3Page")
 
   return (
     <main className="overflow-x-hidden bg-slate-950 text-slate-100">
@@ -83,24 +80,27 @@ export default function AudioMain() {
           <div className="flex flex-col items-center justify-center gap-2 md:gap-4 lg:gap-6">
             <header className="text-center">
               <p
-                className={`inline-flex max-w-full items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1.5 ${TYPE.badge}`}
+                className={`inline-flex max-w-full items-center gap-2 rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1.5 ${TYPE.badge}`}
               >
-                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" aria-hidden />
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" aria-hidden />
                 <span className="truncate">{t("hero_badge")}</span>
               </p>
               <h1
                 id="hero-title"
-                className={`mt-3 bg-gradient-to-r from-emerald-200 via-slate-100 to-violet-300 bg-clip-text md:mt-4 lg:mt-5 ${TYPE.h1}`}
+                className={`mt-3 bg-gradient-to-r from-amber-200 via-slate-100 to-orange-300 bg-clip-text md:mt-4 lg:mt-5 ${TYPE.h1}`}
               >
                 {t("hero_title")}
               </h1>
+              <p className={`mx-auto mt-3 max-w-2xl md:mt-4 lg:max-w-6xl ${TYPE.sectionIntro}`}>
+                {t("hero_subtitle")}
+              </p>
 
               <aside
-                className="fact-chunk mx-auto mt-4 w-full max-w-6xl rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-left md:mt-5 md:max-w-none md:p-5 lg:mx-0"
+                className="fact-chunk mx-auto mt-4 w-full max-w-7xl rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4 text-left md:mt-5 md:max-w-none md:p-5 lg:mx-0"
                 aria-label="Quick answer"
               >
                 <p className={TYPE.body}>
-                  <strong className="font-semibold text-emerald-200">
+                  <strong className="font-semibold text-amber-200">
                     {t("quick_answer_label")}
                   </strong>{" "}
                   {t("quick_answer_text")}
@@ -126,26 +126,22 @@ export default function AudioMain() {
                   </li>
                 </ul>
                 <p className={`mt-3 md:mt-4 ${TYPE.meta}`}>
-                  <time dateTime={AUDIO_LAST_MODIFIED}>
-                    {t("content_updated")}: {AUDIO_LAST_MODIFIED}
+                  <time dateTime={MP3_LAST_MODIFIED}>
+                    {t("content_updated")}: {MP3_LAST_MODIFIED}
                   </time>
                 </p>
               </aside>
             </header>
 
             <div className="mt-6 w-full min-w-0 md:mt-0">
-              <AudioDownloader variant="hero" autoFocus />
+              <Mp3Downloader variant="hero" autoFocus />
             </div>
           </div>
 
           <p className={`mx-auto mt-6 max-w-xl text-center ${TYPE.meta}`}>
-            {t("video_crosslink_prefix")}{" "}
-            <Link href="/youtube-video-downloader" className={TYPE.link}>
-              {t("video_crosslink_link")}
-            </Link>
-            {" · "}
-            <Link href="/youtube-to-mp3" className={TYPE.link}>
-              {t("mp3_crosslink_link")}
+            {t("audio_crosslink_prefix")}{" "}
+            <Link href="/youtube-audio-downloader" className={TYPE.link}>
+              {t("audio_crosslink_link")}
             </Link>
             {" · "}
             <Link href="/" className={TYPE.link}>
@@ -236,7 +232,7 @@ export default function AudioMain() {
             {t("faq_intro")}
           </p>
           <dl className="mx-auto mt-5 max-w-xl divide-y divide-white/10 rounded-2xl border border-white/10 bg-slate-900/45 md:mt-7 md:max-w-3xl lg:mt-8 lg:max-w-7xl">
-            {AUDIO_FAQ_ITEMS.map((item) => (
+            {MP3_FAQ_ITEMS.map((item) => (
               <div key={item.question} className="px-4 py-4 md:px-6 md:py-5 lg:px-8 lg:py-6">
                 <dt className={TYPE.faqQuestion}>{item.question}</dt>
                 <dd className={`mt-2 md:mt-2.5 ${TYPE.faqAnswer}`}>{item.answer}</dd>
