@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: "YoutubeShortDownloader",
       images: [
         {
-          url: "/static/images/og/youtube-short-downloader-home.png",
+          url: "/static/images/og/youtube-shorts-to-webm.png",
           width: 1200,
           height: 630,
           alt: title,
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       card: "summary_large_image",
-      images: ["/static/images/og/youtube-short-downloader-home.png"],
+      images: ["/static/images/og/youtube-shorts-to-webm.png"],
     },
     robots: { index: true, follow: true },
     alternates: { canonical },

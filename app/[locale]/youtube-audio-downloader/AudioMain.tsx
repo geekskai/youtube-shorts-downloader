@@ -138,7 +138,7 @@ export default function AudioMain() {
             </div>
           </div>
 
-          <p className={`mx-auto mt-6 max-w-xl text-center ${TYPE.meta}`}>
+          <p className={`mx-auto mt-6 max-w-6xl text-center ${TYPE.meta}`}>
             {t("video_crosslink_prefix")}{" "}
             <Link href="/youtube-video-downloader" className={TYPE.link}>
               {t("video_crosslink_link")}
